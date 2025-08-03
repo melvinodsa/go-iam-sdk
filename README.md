@@ -9,15 +9,25 @@ The Go IAM SDK is a lightweight library for integrating with the Go IAM server. 
 
 ## Installation
 
+### Go
+
 ```bash
 go get github.com/melvinodsa/go-iam-sdk/golang
 ```
 
-## Usage (Go)
+### TypeScript
+
+```bash
+pnpm install github:melvinodsa/go-iam-sdk
+```
+
+## Usage
+
+### Go
 
 This SDK currently supports Go. Support for other languages will be added soon.
 
-### Initialize the Service
+#### Initialize the Service
 
 ```go
 import (
@@ -31,7 +41,7 @@ func main() {
 }
 ```
 
-### Verify Authentication Code
+#### Verify Authentication Code
 
 ```go
 ctx := context.Background()
@@ -42,7 +52,7 @@ if err != nil {
 fmt.Println("Access Token:", token)
 ```
 
-### Fetch Current User Information
+#### Fetch Current User Information
 
 ```go
 user, err := service.Me(ctx, token)
@@ -52,7 +62,7 @@ if err != nil {
 fmt.Printf("User: %+v\n", user)
 ```
 
-### Create a Resource
+#### Create a Resource
 
 ```go
 resource := &golang.Resource{
@@ -67,4 +77,50 @@ if err != nil {
 	log.Fatalf("Failed to create resource: %v", err)
 }
 fmt.Println("Resource created successfully")
+```
+
+### TypeScript
+
+#### Initialize the SDK
+
+```typescript
+import { GoIamSdk } from "./index";
+
+const sdk = new GoIamSdk(
+  "https://go-iam.example.com",
+  "your-client-id",
+  "your-secret"
+);
+```
+
+#### Verify Authentication Code
+
+```typescript
+const token = await sdk.verify("auth-code");
+console.log("Access Token:", token);
+```
+
+#### Fetch Current User Information
+
+```typescript
+const user = await sdk.me(token);
+console.log("User:", user);
+```
+
+#### Create a Resource
+
+```typescript
+const resource = {
+  id: "resource-id",
+  name: "Resource Name",
+  description: "Resource Description",
+  key: "resource-key",
+  enabled: true,
+  projectId: "project-id",
+  createdBy: "creator",
+  updatedBy: "updater",
+};
+
+await sdk.createResource(resource, token);
+console.log("Resource created successfully");
 ```
