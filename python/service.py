@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from .types import User, Resource
+from .models import User, Resource
 
 
 class Service(ABC):

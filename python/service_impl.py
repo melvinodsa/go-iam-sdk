@@ -1,7 +1,7 @@
 import requests
 from typing import Optional
 from .service import Service
-from .types import User, Resource, AuthCallbackResponse, UserResponse, ResourceResponse
+from .models import User, Resource, AuthCallbackResponse, UserResponse, ResourceResponse
 
 
 class ServiceImpl(Service):
