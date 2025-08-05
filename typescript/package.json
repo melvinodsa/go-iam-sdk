@@ -1,9 +1,34 @@
 {
+	"name": "@goiam/typescript",
+	"version": "0.0.1",
+	"description": "TypeScript SDK for Go IAM - A lightweight Identity and Access Management server",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"scripts": {
+		"build": "tsc",
+		"test": "jest",
+		"prepublishOnly": "npm run build"
+	},
+	"keywords": [
+		"iam",
+		"authentication",
+		"authorization",
+		"golang",
+		"typescript"
+	],
+	"author": "melvinodsa",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/melvinodsa/go-iam-sdk.git",
+		"directory": "typescript"
+	},
 	"devDependencies": {
 		"@types/jest": "^30.0.0",
 		"axios-mock-adapter": "^2.1.0",
 		"jest": "^30.0.5",
-		"ts-jest": "^29.4.1"
+		"ts-jest": "^29.4.1",
+		"typescript": "^5.0.0"
 	},
 	"dependencies": {
 		"axios": "^1.11.0"

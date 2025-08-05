@@ -63,7 +63,8 @@ export class GoIamSdk {
             });
             return response.data.data.accessToken;
         } catch (error) {
-            throw new Error(`Failed to verify code: ${error.response?.data?.message || error.message}`);
+            const err = error as any;
+            throw new Error(`Failed to verify code: ${err.response?.data?.message || err.message}`);
         }
     }
 
@@ -76,7 +77,8 @@ export class GoIamSdk {
             });
             return response.data.data;
         } catch (error) {
-            throw new Error(`Failed to fetch user information: ${error.response?.data?.message || error.message}`);
+            const err = error as any;
+            throw new Error(`Failed to fetch user information: ${err.response?.data?.message || err.message}`);
         }
     }
 
@@ -88,7 +90,8 @@ export class GoIamSdk {
                 },
             });
         } catch (error) {
-            throw new Error(`Failed to create resource: ${error.response?.data?.message || error.message}`);
+            const err = error as any;
+            throw new Error(`Failed to create resource: ${err.response?.data?.message || err.message}`);
         }
     }
 }
