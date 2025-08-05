@@ -14,7 +14,7 @@ class TestServiceImpl(unittest.TestCase):
             secret="test-secret"
         )
     
-    @patch('python.service_impl.requests.Session.get')
+    @patch('goiam.service_impl.requests.Session.get')
     def test_verify_success(self, mock_get):
         # Mock successful response
         mock_response = Mock()
@@ -30,7 +30,7 @@ class TestServiceImpl(unittest.TestCase):
         self.assertEqual(token, "test-token")
         mock_get.assert_called_once()
     
-    @patch('python.service_impl.requests.Session.get')
+    @patch('goiam.service_impl.requests.Session.get')
     def test_verify_failure(self, mock_get):
         # Mock failure response
         mock_response = Mock()
@@ -43,7 +43,7 @@ class TestServiceImpl(unittest.TestCase):
         
         self.assertIn("Failed to verify code", str(context.exception))
     
-    @patch('python.service_impl.requests.Session.get')
+    @patch('goiam.service_impl.requests.Session.get')
     def test_me_success(self, mock_get):
         # Mock successful response
         mock_response = Mock()
@@ -64,7 +64,7 @@ class TestServiceImpl(unittest.TestCase):
         self.assertEqual(user.name, "Test User")
         self.assertEqual(user.email, "test@example.com")
     
-    @patch('python.service_impl.requests.Session.get')
+    @patch('goiam.service_impl.requests.Session.get')
     def test_me_failure(self, mock_get):
         # Mock failure response
         mock_response = Mock()
@@ -77,7 +77,7 @@ class TestServiceImpl(unittest.TestCase):
         
         self.assertIn("Failed to fetch user information", str(context.exception))
     
-    @patch('python.service_impl.requests.Session.post')
+    @patch('goiam.service_impl.requests.Session.post')
     def test_create_resource_success(self, mock_post):
         # Mock successful response
         mock_response = Mock()
@@ -98,7 +98,7 @@ class TestServiceImpl(unittest.TestCase):
         self.service.create_resource(resource, "valid-token")
         mock_post.assert_called_once()
     
-    @patch('python.service_impl.requests.Session.post')
+    @patch('goiam.service_impl.requests.Session.post')
     def test_create_resource_failure(self, mock_post):
         # Mock failure response
         mock_response = Mock()
