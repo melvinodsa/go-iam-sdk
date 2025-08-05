@@ -52,9 +52,6 @@ Issues = "https://github.com/melvinodsa/go-iam-sdk/issues"
 where = ["."]
 include = ["goiam*"]
 
-[tool.setuptools.package-dir]
-goiam = "python"
-
 [tool.black]
 line-length = 88
 target-version = ['py38']

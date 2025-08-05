@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import Mock, patch
 import json
-from python.service_impl import ServiceImpl
-from python.models import Resource
+from goiam.service_impl import ServiceImpl
+from goiam.models import Resource
 
 
 class TestServiceImpl(unittest.TestCase):
