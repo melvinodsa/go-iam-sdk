@@ -26,11 +26,19 @@ pnpm add @goiam/typescript
 yarn add @goiam/typescript
 ```
 
+### Python
+
+```bash
+pip install goiam-python
+# or
+poetry add goiam-python
+# or
+pipenv install goiam-python
+```
+
 ## Usage
 
 ### Go
-
-This SDK currently supports Go. Support for other languages will be added soon.
 
 #### Initialize the Service
 
@@ -131,4 +139,64 @@ const resource = {
 
 await sdk.createResource(resource, token);
 console.log("Resource created successfully");
+```
+
+### Python
+
+[![PyPI version](https://badge.fury.io/py/goiam-python.svg)](https://badge.fury.io/py/goiam-python)
+[![Python versions](https://img.shields.io/pypi/pyversions/goiam-python.svg)](https://pypi.org/project/goiam-python/)
+
+#### Initialize the SDK
+
+```python
+from goiam import new_service
+
+service = new_service(
+    base_url="https://go-iam.example.com",
+    client_id="your-client-id",
+    secret="your-secret"
+)
+```
+
+#### Verify Authentication Code
+
+```python
+try:
+    token = service.verify("auth-code")
+    print(f"Access Token: {token}")
+except Exception as error:
+    print(f"Failed to verify code: {error}")
+```
+
+#### Fetch Current User Information
+
+```python
+try:
+    user = service.me(token)
+    print(f"User: {user.name} ({user.email})")
+except Exception as error:
+    print(f"Failed to fetch user information: {error}")
+```
+
+#### Create a Resource
+
+```python
+from goiam import Resource
+
+resource = Resource(
+    id="resource-id",
+    name="Resource Name",
+    description="Resource Description",
+    key="resource-key",
+    enabled=True,
+    project_id="project-id",
+    created_by="creator",
+    updated_by="updater"
+)
+
+try:
+    service.create_resource(resource, token)
+    print("Resource created successfully")
+except Exception as error:
+    print(f"Failed to create resource: {error}")
 ```

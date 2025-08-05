@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "goiam-python"
+version = "0.0.1"
+description = "Python SDK for Go IAM - A lightweight Identity and Access Management server"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "melvinodsa", email = "melvinodsa@gmail.com"}
+]
+maintainers = [
+    {name = "melvinodsa", email = "melvinodsa@gmail.com"}
+]
+keywords = ["iam", "authentication", "authorization", "golang", "python", "sdk"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Systems Administration :: Authentication/Directory",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "requests>=2.25.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-cov>=2.0",
+    "black>=21.0",
+    "flake8>=3.8",
+    "mypy>=0.910",
+]
+
+[project.urls]
+Homepage = "https://github.com/melvinodsa/go-iam-sdk"
+Repository = "https://github.com/melvinodsa/go-iam-sdk.git"
+Documentation = "https://github.com/melvinodsa/go-iam-sdk/tree/main/python"
+Issues = "https://github.com/melvinodsa/go-iam-sdk/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["goiam*"]
+
+[tool.setuptools.package-dir]
+goiam = "python"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
