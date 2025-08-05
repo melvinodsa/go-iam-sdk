@@ -133,8 +133,8 @@ try {
 > ✅ Admin UI: [go-iam-ui](https://github.com/melvinodsa/go-iam-ui)  
 > 🐳 Docker Setup: [go-iam-docker](https://github.com/melvinodsa/go-iam-docker)  
 > 🔐 Backend: [go-iam](https://github.com/melvinodsa/go-iam)  
-> 📦 SDK: [go-iam-sdk](https://github.com/melvinodsa/go-iam-sdk)
-> 📦 Examples: [go-iam-sdk](https://github.com/melvinodsa/go-iam-examples)
+> 📦 SDK: [go-iam-sdk](https://github.com/melvinodsa/go-iam-sdk)  
+> 🚀 Examples: [go-iam-sdk](https://github.com/melvinodsa/go-iam-examples)
 
 ## License
 

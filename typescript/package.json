@@ -23,6 +23,7 @@
 		"url": "https://github.com/melvinodsa/go-iam-sdk.git",
 		"directory": "typescript"
 	},
+	"readme": "README.md",
 	"devDependencies": {
 		"@types/jest": "^30.0.0",
 		"axios-mock-adapter": "^2.1.0",
