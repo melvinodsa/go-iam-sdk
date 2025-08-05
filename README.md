@@ -6,6 +6,7 @@ The Go IAM SDK is a lightweight library for integrating with the Go IAM server. 
 > 🐳 Docker Setup: [go-iam-docker](https://github.com/melvinodsa/go-iam-docker)  
 > 🔐 Backend: [go-iam](https://github.com/melvinodsa/go-iam)  
 > 📦 SDK: [go-iam-sdk](https://github.com/melvinodsa/go-iam-sdk)
+> 📦 Examples: [go-iam-sdk](https://github.com/melvinodsa/go-iam-examples)
 
 ## Installation
 
@@ -18,7 +19,11 @@ go get github.com/melvinodsa/go-iam-sdk/golang
 ### TypeScript
 
 ```bash
-pnpm install github:melvinodsa/go-iam-sdk
+npm install @goiam/typescript
+# or
+pnpm add @goiam/typescript
+# or
+yarn add @goiam/typescript
 ```
 
 ## Usage
@@ -84,7 +89,7 @@ fmt.Println("Resource created successfully")
 #### Initialize the SDK
 
 ```typescript
-import { GoIamSdk } from "./index";
+import { GoIamSdk } from "@goiam/typescript";
 
 const sdk = new GoIamSdk(
   "https://go-iam.example.com",
