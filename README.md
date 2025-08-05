@@ -86,6 +86,9 @@ fmt.Println("Resource created successfully")
 
 ### TypeScript
 
+[![npm version](https://badge.fury.io/js/@goiam%2Ftypescript.svg)](https://badge.fury.io/js/@goiam%2Ftypescript)
+[![npm downloads](https://img.shields.io/npm/dm/@goiam/typescript.svg)](https://www.npmjs.com/package/@goiam/typescript)
+
 #### Initialize the SDK
 
 ```typescript
