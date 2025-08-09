@@ -1,0 +1,63 @@
+# Justfile for common Rust SDK tasks
+# Run with `just <command>`
+
+# Default recipe - run tests
+default: test
+
+# Run all tests
+test:
+    cargo test --verbose
+
+# Run tests with coverage
+test-coverage:
+    cargo tarpaulin --verbose --all-features --workspace --timeout 120
+
+# Run tests in release mode
+test-release:
+    cargo test --release --verbose
+
+# Format code
+fmt:
+    cargo fmt --all
+
+# Check formatting
+fmt-check:
+    cargo fmt --all -- --check
+
+# Run clippy linter
+lint:
+    cargo clippy --all-targets --all-features -- -D warnings
+
+# Build the project
+build:
+    cargo build --verbose
+
+# Build in release mode
+build-release:
+    cargo build --release --verbose
+
+# Clean build artifacts
+clean:
+    cargo clean
+
+# Generate documentation
+docs:
+    cargo doc --no-deps --all-features --open
+
+# Check for security vulnerabilities
+audit:
+    cargo audit
+
+# Install required tools
+install-tools:
+    cargo install cargo-tarpaulin cargo-audit
+
+# Run all checks (format, lint, test)
+check: fmt-check lint test
+
+# Prepare for PR (format, check, test with coverage)
+pr-ready: fmt check test-coverage
+
+# Watch for changes and run tests
+watch:
+    cargo watch -x test

@@ -1,0 +1,342 @@
+name: Python SDK Pull Request Validation
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "python/**"
+      - ".github/workflows/pr-validation-python.yml"
+  push:
+    branches: [main]
+    paths:
+      - "python/**"
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  python-validation:
+    name: Python SDK Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+          cache-dependency-path: python/requirements.txt
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('python/requirements.txt', 'python/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        working-directory: ./python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install -e .[dev]
+          pip install -r requirements.txt
+
+      - name: Install additional tools
+        run: |
+          pip install black flake8 mypy pylint bandit safety isort pytest-xdist pytest-mock
+
+      - name: Check code formatting with Black
+        working-directory: ./python
+        run: black --check --diff .
+
+      - name: Check import sorting with isort
+        working-directory: ./python
+        run: isort --check-only --diff .
+
+      - name: Run Flake8 linting
+        working-directory: ./python
+        run: flake8 . --statistics --tee --output-file=flake8-report.txt
+
+      - name: Run Pylint
+        working-directory: ./python
+        run: |
+          pylint goiam/ --output-format=text --reports=yes --score=yes > pylint-report.txt || echo "Pylint completed with warnings"
+          cat pylint-report.txt
+
+      - name: Run MyPy type checking
+        working-directory: ./python
+        run: mypy goiam/ --ignore-missing-imports --show-error-codes
+
+      - name: Run tests with coverage
+        working-directory: ./python
+        run: |
+          pytest -v --cov=goiam --cov-report=term --cov-report=xml --cov-report=html --junitxml=pytest-results.xml
+
+      - name: Generate coverage reports
+        working-directory: ./python
+        run: |
+          echo "Coverage report generated"
+          ls -la htmlcov/ || echo "No htmlcov directory found"
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-coverage-report
+          path: |
+            python/htmlcov/
+            python/coverage.xml
+            python/pytest-results.xml
+            python/flake8-report.txt
+            python/pylint-report.txt
+
+      - name: Check test coverage threshold
+        working-directory: ./python
+        run: |
+          if [ -f "coverage.xml" ]; then
+            COVERAGE=$(python -c "import xml.etree.ElementTree as ET; tree = ET.parse('coverage.xml'); root = tree.getroot(); coverage = root.attrib['line-rate']; print(f'{float(coverage)*100:.1f}')")
+            echo "Test coverage: ${COVERAGE}%"
+            THRESHOLD=75
+            if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+              echo "❌ Test coverage ${COVERAGE}% is below threshold ${THRESHOLD}%"
+              exit 1
+            else
+              echo "✅ Test coverage ${COVERAGE}% meets threshold ${THRESHOLD}%"
+            fi
+          else
+            echo "No coverage.xml found, skipping coverage check"
+          fi
+
+      - name: Build package
+        working-directory: ./python
+        run: |
+          pip install build
+          python -m build
+
+      - name: Check package contents
+        working-directory: ./python
+        run: |
+          echo "Package contents:"
+          ls -la dist/
+          pip install twine
+          twine check dist/*
+
+      - name: Run security checks with Bandit
+        working-directory: ./python
+        run: bandit -r goiam/ -f json -o bandit-report.json || echo "Security scan completed with warnings"
+
+      - name: Check for known vulnerabilities
+        working-directory: ./python
+        run: safety check --json --output safety-report.json || echo "Safety check completed with warnings"
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-security-reports
+          path: |
+            python/bandit-report.json
+            python/safety-report.json
+        if: always()
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install security tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit safety pip-audit
+
+      - name: Install project dependencies
+        working-directory: ./python
+        run: |
+          pip install -e .
+          pip install -r requirements.txt
+
+      - name: Run Bandit security scanner
+        working-directory: ./python
+        run: |
+          bandit -r goiam/ -f sarif -o bandit.sarif || echo "Bandit scan completed"
+          bandit -r goiam/ -f json -o bandit.json || echo "Bandit scan completed"
+
+      - name: Run Safety vulnerability scanner
+        working-directory: ./python
+        run: |
+          safety check --json --output safety.json || echo "Safety check completed"
+
+      - name: Run pip-audit
+        working-directory: ./python
+        run: |
+          pip-audit --format=json --output=pip-audit.json || echo "pip-audit completed"
+
+      - name: Upload security artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-security-audit
+          path: |
+            python/bandit.sarif
+            python/bandit.json
+            python/safety.json
+            python/pip-audit.json
+        if: always()
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: python/bandit.sarif
+        if: always()
+
+  cross-platform-test:
+    name: Cross-platform Tests
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        exclude:
+          # Reduce matrix size for faster builds
+          - os: windows-latest
+            python-version: "3.8"
+          - os: macos-latest
+            python-version: "3.8"
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        working-directory: ./python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install -r requirements.txt
+
+      - name: Run tests
+        working-directory: ./python
+        run: pytest -v
+
+      - name: Test package installation
+        working-directory: ./python
+        run: |
+          pip install build
+          python -m build
+          pip install dist/*.whl --force-reinstall
+
+  package-validation:
+    name: Package Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine check-manifest
+
+      - name: Install project
+        working-directory: ./python
+        run: |
+          pip install -e .
+          pip install -r requirements.txt
+
+      - name: Check package manifest
+        working-directory: ./python
+        run: check-manifest
+
+      - name: Build source distribution
+        working-directory: ./python
+        run: python -m build --sdist
+
+      - name: Build wheel
+        working-directory: ./python
+        run: python -m build --wheel
+
+      - name: Check distribution
+        working-directory: ./python
+        run: twine check dist/*
+
+      - name: Test package installation from wheel
+        working-directory: ./python
+        run: |
+          pip install dist/*.whl --force-reinstall
+          python -c "import goiam; print('Package installed successfully')"
+
+      - name: Test package installation from sdist
+        working-directory: ./python
+        run: |
+          pip uninstall goiam-python -y
+          pip install dist/*.tar.gz
+          python -c "import goiam; print('Package installed successfully from sdist')"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-dist
+          path: python/dist/
+
+  performance-test:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        working-directory: ./python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install -r requirements.txt
+          pip install pytest-benchmark memory-profiler
+
+      - name: Run performance tests
+        working-directory: ./python
+        run: |
+          echo "Running performance tests..."
+          # Check if there are any benchmark test files
+          if ls test_*bench*.py 1> /dev/null 2>&1; then
+            pytest --benchmark-only --benchmark-json=benchmark.json
+          else
+            echo "No benchmark tests found (test_*bench*.py files)"
+          fi
+
+          # Basic performance check - measure import time
+          python -c "import time; start = time.time(); import goiam; end = time.time(); import_time = (end - start) * 1000; print(f'Import time: {import_time:.2f}ms'); print('⚠️  Import time exceeds 100ms' if import_time > 100 else '✅ Import time is acceptable')"
+
+      - name: Upload performance results
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-performance-results
+          path: python/benchmark.json
+        if: always()

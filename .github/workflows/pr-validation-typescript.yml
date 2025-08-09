@@ -1,0 +1,320 @@
+name: TypeScript SDK Pull Request Validation
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "typescript/**"
+      - ".github/workflows/pr-validation-typescript.yml"
+  push:
+    branches: [main]
+    paths:
+      - "typescript/**"
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  typescript-validation:
+    name: TypeScript SDK Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: typescript/package-lock.json
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('typescript/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        working-directory: ./typescript
+        run: pnpm install --frozen-lockfile
+
+      - name: Type checking
+        working-directory: ./typescript
+        run: npx tsc --noEmit
+
+      - name: Run ESLint
+        working-directory: ./typescript
+        run: |
+          if [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ] || [ -f "eslint.config.js" ]; then
+            npx eslint . --ext .ts,.tsx --format=json --output-file eslint-results.json || true
+            npx eslint . --ext .ts,.tsx
+          else
+            echo "No ESLint configuration found, skipping linting"
+          fi
+
+      - name: Run Prettier check
+        working-directory: ./typescript
+        run: |
+          if [ -f ".prettierrc" ] || [ -f ".prettierrc.json" ] || [ -f "prettier.config.js" ]; then
+            npx prettier --check "**/*.{ts,tsx,js,jsx,json,md}"
+          else
+            echo "No Prettier configuration found, skipping format check"
+          fi
+
+      - name: Run tests with coverage
+        working-directory: ./typescript
+        run: npm test -- --coverage --coverageReporters=text --coverageReporters=lcov --coverageReporters=json
+
+      - name: Generate coverage reports
+        working-directory: ./typescript
+        run: |
+          if [ -d "coverage" ]; then
+            echo "Coverage reports generated"
+            ls -la coverage/
+          else
+            echo "No coverage directory found"
+          fi
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: typescript-coverage-report
+          path: |
+            typescript/coverage/
+            typescript/eslint-results.json
+        if: always()
+
+      - name: Check test coverage threshold
+        working-directory: ./typescript
+        run: |
+          if [ -f "coverage/coverage-summary.json" ]; then
+            COVERAGE=$(node -p "Math.round(JSON.parse(require('fs').readFileSync('coverage/coverage-summary.json')).total.lines.pct)")
+            echo "Test coverage: ${COVERAGE}%"
+            THRESHOLD=75
+            if [ "$COVERAGE" -lt "$THRESHOLD" ]; then
+              echo "❌ Test coverage ${COVERAGE}% is below threshold ${THRESHOLD}%"
+              exit 1
+            else
+              echo "✅ Test coverage ${COVERAGE}% meets threshold ${THRESHOLD}%"
+            fi
+          else
+            echo "No coverage summary found, skipping coverage check"
+          fi
+
+      - name: Build project
+        working-directory: ./typescript
+        run: npm run build
+
+      - name: Check build outputs
+        working-directory: ./typescript
+        run: |
+          echo "Checking build outputs..."
+          ls -la dist/
+          if [ -f "dist/index.js" ] && [ -f "dist/index.d.ts" ]; then
+            echo "✅ Build outputs are present"
+          else
+            echo "❌ Missing required build outputs"
+            exit 1
+          fi
+
+      - name: Run package audit
+        working-directory: ./typescript
+        run: |
+          pnpm audit --audit-level moderate || echo "Some vulnerabilities found, but not failing the build"
+
+      - name: Check package.json scripts
+        working-directory: ./typescript
+        run: |
+          echo "Available scripts:"
+          npm run 2>/dev/null | grep -E "^  " || echo "No custom scripts found"
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Install dependencies
+        working-directory: ./typescript
+        run: pnpm install --frozen-lockfile
+
+      - name: Run security audit
+        working-directory: ./typescript
+        run: pnpm audit --audit-level high
+
+      - name: Check for known vulnerabilities
+        working-directory: ./typescript
+        run: |
+          npx audit-ci --config ./audit-ci.json || echo "Audit CI not configured, using default settings"
+          pnpm audit --audit-level high --json > audit-results.json || true
+
+      - name: Upload security audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: typescript-security-audit
+          path: typescript/audit-results.json
+        if: always()
+
+  cross-platform-test:
+    name: Cross-platform Tests
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: ["18", "20", "22"]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Install dependencies
+        working-directory: ./typescript
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        working-directory: ./typescript
+        run: npm test
+
+      - name: Build project
+        working-directory: ./typescript
+        run: npm run build
+
+  package-validation:
+    name: Package Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Install dependencies
+        working-directory: ./typescript
+        run: pnpm install --frozen-lockfile
+
+      - name: Build for publishing
+        working-directory: ./typescript
+        run: npm run prepublishOnly
+
+      - name: Validate package contents
+        working-directory: ./typescript
+        run: |
+          echo "Package contents:"
+          npm pack --dry-run
+
+          # Check required files exist
+          required_files=("dist/index.js" "dist/index.d.ts" "package.json" "README.md")
+          for file in "${required_files[@]}"; do
+            if [ -f "$file" ]; then
+              echo "✅ $file exists"
+            else
+              echo "❌ $file is missing"
+              exit 1
+            fi
+          done
+
+      - name: Check package size
+        working-directory: ./typescript
+        run: |
+          PACKAGE_SIZE=$(npm pack --dry-run --json | jq -r '.[0].size')
+          MAX_SIZE=1048576  # 1MB in bytes
+          echo "Package size: $PACKAGE_SIZE bytes"
+          if [ "$PACKAGE_SIZE" -gt "$MAX_SIZE" ]; then
+            echo "⚠️  Package size exceeds 1MB threshold"
+          else
+            echo "✅ Package size is acceptable"
+          fi
+
+  performance-test:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Install dependencies
+        working-directory: ./typescript
+        run: pnpm install --frozen-lockfile
+
+      - name: Build project
+        working-directory: ./typescript
+        run: npm run build
+
+      - name: Run performance tests
+        working-directory: ./typescript
+        run: |
+          echo "Running performance tests..."
+          # Check if there are any performance test files
+          if ls *.perf.test.ts 1> /dev/null 2>&1; then
+            npx jest --testMatch="**/*.perf.test.ts" --verbose
+          else
+            echo "No performance tests found (.perf.test.ts files)"
+          fi
+
+          # Basic performance check - measure build time
+          start_time=$(date +%s)
+          npm run build
+          end_time=$(date +%s)
+          build_time=$((end_time - start_time))
+          echo "Build completed in ${build_time} seconds"
+
+          if [ "$build_time" -gt 30 ]; then
+            echo "⚠️  Build time exceeds 30 seconds"
+          else
+            echo "✅ Build time is acceptable"
+          fi

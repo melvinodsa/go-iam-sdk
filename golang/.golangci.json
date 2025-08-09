@@ -1,0 +1,39 @@
+{
+    "run": {
+        "timeout": "5m",
+        "tests": true
+    },
+    "linters": {
+        "enable": [
+            "errcheck",
+            "gosimple",
+            "govet",
+            "ineffassign",
+            "staticcheck",
+            "typecheck",
+            "unused",
+            "gofmt",
+            "goimports",
+            "misspell",
+            "gosec",
+            "gocritic"
+        ]
+    },
+    "linters-settings": {
+        "gofmt": {
+            "simplify": true
+        },
+        "goimports": {
+            "local-prefixes": "github.com/melvinodsa/go-iam-sdk"
+        },
+        "govet": {
+            "enable-all": true
+        },
+        "misspell": {
+            "locale": "US"
+        }
+    },
+    "issues": {
+        "max-same-issues": 50
+    }
+}

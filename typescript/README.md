@@ -20,23 +20,19 @@ yarn add @goiam/typescript
 ### Initialize the SDK
 
 ```typescript
-import { GoIamSdk } from "@goiam/typescript";
+import { GoIamSdk } from '@goiam/typescript';
 
-const sdk = new GoIamSdk(
-  "https://go-iam.example.com",
-  "your-client-id",
-  "your-secret"
-);
+const sdk = new GoIamSdk('https://go-iam.example.com', 'your-client-id', 'your-secret');
 ```
 
 ### Verify Authentication Code
 
 ```typescript
 try {
-  const token = await sdk.verify("auth-code");
-  console.log("Access Token:", token);
+  const token = await sdk.verify('auth-code');
+  console.log('Access Token:', token);
 } catch (error) {
-  console.error("Failed to verify code:", error);
+  console.error('Failed to verify code:', error);
 }
 ```
 
@@ -45,9 +41,9 @@ try {
 ```typescript
 try {
   const user = await sdk.me(token);
-  console.log("User:", user);
+  console.log('User:', user);
 } catch (error) {
-  console.error("Failed to fetch user information:", error);
+  console.error('Failed to fetch user information:', error);
 }
 ```
 
@@ -55,21 +51,21 @@ try {
 
 ```typescript
 const resource = {
-  id: "resource-id",
-  name: "Resource Name",
-  description: "Resource Description",
-  key: "resource-key",
+  id: 'resource-id',
+  name: 'Resource Name',
+  description: 'Resource Description',
+  key: 'resource-key',
   enabled: true,
-  projectId: "project-id",
-  createdBy: "creator",
-  updatedBy: "updater",
+  projectId: 'project-id',
+  createdBy: 'creator',
+  updatedBy: 'updater',
 };
 
 try {
   await sdk.createResource(resource, token);
-  console.log("Resource created successfully");
+  console.log('Resource created successfully');
 } catch (error) {
-  console.error("Failed to create resource:", error);
+  console.error('Failed to create resource:', error);
 }
 ```
 
@@ -123,10 +119,10 @@ The SDK methods throw errors with descriptive messages. It's recommended to wrap
 
 ```typescript
 try {
-  const result = await sdk.verify("code");
+  const result = await sdk.verify('code');
   // Handle success
 } catch (error) {
-  console.error("API Error:", error.message);
+  console.error('API Error:', error.message);
   // Handle error
 }
 ```

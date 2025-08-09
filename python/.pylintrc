@@ -1,0 +1,20 @@
+# Pylint configuration
+[pylint]
+disable = 
+    C0111,  # missing-docstring
+    R0903,  # too-few-public-methods
+    R0913,  # too-many-arguments
+
+[pylint.messages_control]
+max-line-length = 88
+
+[pylint.design]
+max-args = 7
+max-locals = 15
+max-branches = 12
+max-statements = 50
+
+[pylint.similarities]
+min-similarity-lines = 4
+ignore-comments = yes
+ignore-docstrings = yes
