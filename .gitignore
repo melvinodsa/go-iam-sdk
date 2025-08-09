@@ -3,3 +3,8 @@ node_modules
 __pycache__
 
 venv
+target
+
+.vscode
+
+dist/
