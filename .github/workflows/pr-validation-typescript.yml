@@ -2,14 +2,10 @@ name: TypeScript SDK Pull Request Validation
 
 on:
   pull_request:
-    branches: [main, develop]
-    paths:
-      - "typescript/**"
-      - ".github/workflows/pr-validation-typescript.yml"
-  push:
     branches: [main]
     paths:
       - "typescript/**"
+      - ".github/workflows/pr-validation-typescript.yml"
 
 env:
   NODE_VERSION: "20"

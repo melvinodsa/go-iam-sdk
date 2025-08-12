@@ -2,14 +2,10 @@ name: Pull Request Validation
 
 on:
   pull_request:
-    branches: [main, develop]
-    paths:
-      - "rust/**"
-      - ".github/workflows/pr-validation-rust.yml"
-  push:
     branches: [main]
     paths:
       - "rust/**"
+      - ".github/workflows/pr-validation-rust.yml"
 
 env:
   CARGO_TERM_COLOR: always

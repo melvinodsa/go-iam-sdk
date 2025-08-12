@@ -2,14 +2,10 @@ name: Go SDK Pull Request Validation
 
 on:
   pull_request:
-    branches: [main, develop]
-    paths:
-      - "golang/**"
-      - ".github/workflows/pr-validation-golang.yml"
-  push:
     branches: [main]
     paths:
       - "golang/**"
+      - ".github/workflows/pr-validation-golang.yml"
 
 env:
   GO_VERSION: "1.23"

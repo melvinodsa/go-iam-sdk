@@ -2,14 +2,10 @@ name: Python SDK Pull Request Validation
 
 on:
   pull_request:
-    branches: [main, develop]
-    paths:
-      - "python/**"
-      - ".github/workflows/pr-validation-python.yml"
-  push:
     branches: [main]
     paths:
       - "python/**"
+      - ".github/workflows/pr-validation-python.yml"
 
 env:
   PYTHON_VERSION: "3.11"
