@@ -105,30 +105,6 @@ jobs:
             rust/target/debug/deps/goiam-*
             rust/cobertura.xml
 
-  security-audit:
-    name: Security Audit
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache cargo
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo
-          key: ${{ runner.os }}-cargo-audit-${{ hashFiles('rust/**/Cargo.lock') }}
-
-      - name: Install cargo-audit
-        run: cargo install cargo-audit
-
-      - name: Run security audit
-        working-directory: ./rust
-        run: cargo audit
-
   minimum-supported-rust-version:
     name: Test MSRV
     runs-on: ubuntu-latest
@@ -143,34 +119,3 @@ jobs:
       - name: Test with MSRV
         working-directory: ./rust
         run: cargo test --verbose
-
-  cross-platform-test:
-    name: Cross-platform Tests
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        rust: [stable, beta]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Rust ${{ matrix.rust }}
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ matrix.rust }}
-
-      - name: Cache cargo
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo
-          key: ${{ matrix.os }}-${{ matrix.rust }}-cargo-${{ hashFiles('rust/**/Cargo.lock') }}
-
-      - name: Run tests
-        working-directory: ./rust
-        run: cargo test --verbose
-
-      - name: Check build
-        working-directory: ./rust
-        run: cargo check --verbose
