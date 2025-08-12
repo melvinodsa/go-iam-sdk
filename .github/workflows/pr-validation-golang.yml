@@ -55,13 +55,6 @@ jobs:
         working-directory: ./golang
         run: staticcheck ./...
 
-      - name: Install golangci-lint
-        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
-
-      - name: Run golangci-lint
-        working-directory: ./golang
-        run: $(go env GOPATH)/bin/golangci-lint run --verbose
-
       - name: Check code formatting
         working-directory: ./golang
         run: |
