@@ -133,7 +133,7 @@ jobs:
         run: |
           pip install build
           python -m build --wheel
-          pip install dist/*.whl --force-reinstall
+          python -c "import glob, subprocess; wheel = glob.glob('dist/*.whl')[0]; subprocess.run(['pip', 'install', wheel, '--force-reinstall'])"
 
   package-validation:
     name: Package Validation

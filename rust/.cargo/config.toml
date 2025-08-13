@@ -11,18 +11,6 @@ verbose = true
 # Test with multiple threads
 test-threads = 4
 
-[target.x86_64-unknown-linux-gnu]
-# Linux-specific test configuration
-runner = "cargo"
-
-[target.x86_64-pc-windows-msvc]
-# Windows-specific test configuration
-runner = "cargo"
-
-[target.x86_64-apple-darwin]
-# macOS-specific test configuration
-runner = "cargo"
-
 # Environment variables for testing
 [env]
 RUST_BACKTRACE = "1"
