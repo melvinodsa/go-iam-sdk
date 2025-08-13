@@ -1,8 +1,8 @@
 # Go IAM SDK - Rust
 
-[![Crates.io](https://img.shields.io/crates/v/goiam-rust)](https://crates.io/crates/goiam-rust)
-[![Documentation](https://docs.rs/goiam-rust/badge.svg)](https://docs.rs/goiam-rust)
-[![License](https://img.shields.io/crates/l/goiam-rust)](https://github.com/goiam/sdk/blob/main/LICENSE)
+[![Crates.io](https://img.shields.io/crates/v/goiam)](https://crates.io/crates/goiam)
+[![Documentation](https://docs.rs/goiam/badge.svg)](https://docs.rs/goiam)
+[![License](https://img.shields.io/crates/l/goiam)](https://github.com/melvinodsa/go-iam-sdk/blob/main/LICENSE)
 
 Rust SDK for Go IAM API - Async/Await Support
 
