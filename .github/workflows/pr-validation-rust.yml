@@ -20,9 +20,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: actions-rs/toolchain@v1
         with:
-          components: rustfmt, clippy
+          toolchain: stable # or nightly if that's what you use locally
+          override: true
+          components: clippy, rustfmt
 
       - name: Cache cargo registry
         uses: actions/cache@v4
@@ -64,7 +66,11 @@ jobs:
 
       - name: Run tests
         working-directory: ./rust
-        run: cargo test --verbose --lib
+        run: cargo test --verbose --all-features
+
+      - name: Test with minimal dependencies
+        working-directory: ./rust
+        run: cargo test --no-default-features --verbose
 
       - name: Build documentation
         working-directory: ./rust
