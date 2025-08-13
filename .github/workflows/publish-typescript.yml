@@ -3,7 +3,7 @@ name: Publish TypeScript Package
 on:
   push:
     tags:
-      - "python-v*"
+      - "typescript-v*"
   workflow_dispatch:
 
 jobs:
