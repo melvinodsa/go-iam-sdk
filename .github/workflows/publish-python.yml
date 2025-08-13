@@ -2,9 +2,9 @@ name: Publish Python Package
 
 on:
   push:
-    branches: [main]
-    paths:
-      - "python/**"
+    tags:
+      - "python-v*"
+  workflow_dispatch:
 
 jobs:
   test:
