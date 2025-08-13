@@ -1,6 +1,6 @@
 [package]
 name = "goiam"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["melvinodsa <melvinodsa@gmail.com>"]
 description = "Rust SDK for Go IAM - A lightweight Identity and Access Management server"
