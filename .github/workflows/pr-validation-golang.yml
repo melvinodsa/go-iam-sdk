@@ -1,0 +1,95 @@
+name: Go SDK Pull Request Validation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "golang/**"
+      - ".github/workflows/pr-validation-golang.yml"
+
+env:
+  GO_VERSION: "1.23"
+
+jobs:
+  golang-validation:
+    name: Go SDK Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('golang/**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Download dependencies
+        working-directory: ./golang
+        run: go mod download
+
+      - name: Verify dependencies
+        working-directory: ./golang
+        run: go mod verify
+
+      - name: Run go vet
+        working-directory: ./golang
+        run: go vet ./...
+
+      - name: Install staticcheck
+        run: go install honnef.co/go/tools/cmd/staticcheck@latest
+
+      - name: Run staticcheck
+        working-directory: ./golang
+        run: staticcheck ./...
+
+      - name: Check code formatting
+        working-directory: ./golang
+        run: |
+          if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then
+            echo "The following files are not properly formatted:"
+            gofmt -s -l .
+            echo "Please run 'gofmt -s -w .' to fix formatting issues."
+            exit 1
+          fi
+
+      - name: Run tests
+        working-directory: ./golang
+        run: go test -v -race -coverprofile=coverage.out ./...
+
+      - name: Generate coverage report
+        working-directory: ./golang
+        run: go tool cover -html=coverage.out -o coverage.html
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-coverage-report
+          path: |
+            golang/coverage.out
+            golang/coverage.html
+
+      - name: Check test coverage threshold
+        working-directory: ./golang
+        run: |
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
+          echo "Test coverage: ${COVERAGE}%"
+          THRESHOLD=70
+          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+            echo "❌ Test coverage ${COVERAGE}% is below threshold ${THRESHOLD}%"
+            exit 1
+          else
+            echo "✅ Test coverage ${COVERAGE}% meets threshold ${THRESHOLD}%"
+          fi
+
+      - name: Build project
+        working-directory: ./golang
+        run: go build -v ./...

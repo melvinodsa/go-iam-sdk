@@ -36,6 +36,16 @@ poetry add goiam-python
 pipenv install goiam-python
 ```
 
+### Rust
+
+Add to your `Cargo.toml`:
+
+```toml
+[dependencies]
+goiam = "0.1.0"
+tokio = { version = "1.0", features = ["full"] }
+```
+
 ## Usage
 
 ### Go
@@ -199,4 +209,58 @@ try:
     print("Resource created successfully")
 except Exception as error:
     print(f"Failed to create resource: {error}")
+```
+
+### Rust
+
+[![Crates.io](https://img.shields.io/crates/v/goiam)](https://crates.io/crates/goiam)
+[![Documentation](https://docs.rs/goiam/badge.svg)](https://docs.rs/goiam)
+
+#### Initialize the SDK
+
+```rust
+use goiam::{new_service, Service};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let service = new_service(
+        "https://go-iam.example.com".to_string(),
+        "your-client-id".to_string(),
+        "your-secret".to_string(),
+    );
+
+    // SDK usage here...
+    Ok(())
+}
+```
+
+#### Verify Authentication Code
+
+```rust
+match service.verify("auth-code").await {
+    Ok(token) => println!("Access Token: {}", token),
+    Err(error) => eprintln!("Failed to verify code: {}", error),
+}
+```
+
+#### Fetch Current User Information
+
+```rust
+match service.me(&token).await {
+    Ok(user) => println!("User: {} ({})", user.name, user.email),
+    Err(error) => eprintln!("Failed to fetch user information: {}", error),
+}
+```
+
+#### Create a Resource
+
+```rust
+use goiam::Resource;
+
+let resource = Resource::new("resource-id".to_string(), "Resource Name".to_string());
+
+match service.create_resource(&resource, &token).await {
+    Ok(_) => println!("Resource created successfully"),
+    Err(error) => eprintln!("Failed to create resource: {}", error),
+}
 ```

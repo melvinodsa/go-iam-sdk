@@ -1,0 +1,17 @@
+# Test configuration for Rust SDK
+
+[build]
+# Enable all features for testing
+all-features = true
+
+[test]
+# Run tests with verbose output
+verbose = true
+
+# Test with multiple threads
+test-threads = 4
+
+# Environment variables for testing
+[env]
+RUST_BACKTRACE = "1"
+RUST_LOG = "debug"
