@@ -64,7 +64,7 @@ jobs:
 
       - name: Run tests
         working-directory: ./rust
-        run: cargo test --verbose
+        run: cargo test --verbose --lib
 
       - name: Build documentation
         working-directory: ./rust
