@@ -1,0 +1,7 @@
+include .isort.cfg
+include .pylintrc
+include Makefile
+include pytest.ini
+include requirements.txt
+include test_service.py
+include README.md
