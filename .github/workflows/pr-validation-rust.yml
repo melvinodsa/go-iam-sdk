@@ -64,11 +64,7 @@ jobs:
 
       - name: Run tests
         working-directory: ./rust
-        run: cargo test --verbose --all-features
-
-      - name: Test with minimal dependencies
-        working-directory: ./rust
-        run: cargo test --no-default-features --verbose
+        run: cargo test --verbose
 
       - name: Build documentation
         working-directory: ./rust

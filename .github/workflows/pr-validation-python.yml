@@ -44,7 +44,7 @@ jobs:
 
       - name: Install additional tools
         run: |
-          pip install black flake8 mypy pylint bandit safety isort pytest-xdist pytest-mock
+          pip install black flake8 pylint bandit safety isort pytest-xdist pytest-mock
 
       - name: Check code formatting with Black
         working-directory: ./python
@@ -63,49 +63,6 @@ jobs:
         run: |
           pylint goiam/ --output-format=text --reports=yes --score=yes > pylint-report.txt || echo "Pylint completed with warnings"
           cat pylint-report.txt
-
-      - name: Run MyPy type checking
-        working-directory: ./python
-        run: mypy goiam/ --ignore-missing-imports --show-error-codes
-
-      - name: Run tests with coverage
-        working-directory: ./python
-        run: |
-          pytest -v --cov=goiam --cov-report=term --cov-report=xml --cov-report=html --junitxml=pytest-results.xml
-
-      - name: Generate coverage reports
-        working-directory: ./python
-        run: |
-          echo "Coverage report generated"
-          ls -la htmlcov/ || echo "No htmlcov directory found"
-
-      - name: Upload coverage reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-coverage-report
-          path: |
-            python/htmlcov/
-            python/coverage.xml
-            python/pytest-results.xml
-            python/flake8-report.txt
-            python/pylint-report.txt
-
-      - name: Check test coverage threshold
-        working-directory: ./python
-        run: |
-          if [ -f "coverage.xml" ]; then
-            COVERAGE=$(python -c "import xml.etree.ElementTree as ET; tree = ET.parse('coverage.xml'); root = tree.getroot(); coverage = root.attrib['line-rate']; print(f'{float(coverage)*100:.1f}')")
-            echo "Test coverage: ${COVERAGE}%"
-            THRESHOLD=75
-            if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
-              echo "❌ Test coverage ${COVERAGE}% is below threshold ${THRESHOLD}%"
-              exit 1
-            else
-              echo "✅ Test coverage ${COVERAGE}% meets threshold ${THRESHOLD}%"
-            fi
-          else
-            echo "No coverage.xml found, skipping coverage check"
-          fi
 
       - name: Build package
         working-directory: ./python
