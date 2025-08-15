@@ -8,23 +8,25 @@ export { GoIamClient } from './client';
 
 // Type exports
 export type {
-    GoIamConfig,
-    User,
-    AuthState,
-    GoIamContextValue,
-    GoIamProviderProps,
-    AuthGuardProps,
-    UseGoIamReturn,
-    ApiResponse,
-    ApiError,
-    Storage,
+  GoIamConfig,
+  User,
+  AuthState,
+  GoIamContextValue,
+  GoIamProviderProps,
+  AuthGuardProps,
+  UseGoIamReturn,
+  ApiResponse,
+  ApiError,
+  Storage,
 } from './types';
 
 // Utility functions
-export const createGoIamConfig = (config: Partial<GoIamConfig> & Pick<GoIamConfig, 'baseUrl' | 'clientId' | 'redirectUrl'>): GoIamConfig => ({
-    storageKey: 'goiam_user',
-    timeout: 10000,
-    ...config,
+export const createGoIamConfig = (
+  config: Partial<GoIamConfig> & Pick<GoIamConfig, 'baseUrl' | 'clientId' | 'redirectUrl'>
+): GoIamConfig => ({
+  storageKey: 'goiam_user',
+  timeout: 10000,
+  ...config,
 });
 
 // Constants
