@@ -1,5 +1,5 @@
 {
-    "name": "goiam-react",
+    "name": "@goiam/react",
     "version": "0.1.0",
     "description": "React SDK for Go-IAM - A lightweight Identity and Access Management server",
     "main": "dist/index.js",
@@ -24,9 +24,9 @@
         "format": "prettier --write \"src/**/*.{ts,tsx}\"",
         "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
         "link:local": "npm run build && npm link",
-        "unlink:local": "npm unlink -g goiam-react",
+        "unlink:local": "npm unlink -g @goiam/react",
         "pack:local": "npm pack",
-        "install:local": "npm run build && npm pack && npm install -g goiam-react-*.tgz"
+        "install:local": "npm run build && npm pack && npm install -g @goiam/react-*.tgz"
     },
     "keywords": [
         "react",

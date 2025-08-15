@@ -99,7 +99,7 @@ jobs:
         working-directory: ./react
         run: |
           npm pack
-          npm install -g goiam-react-*.tgz
+          npm install -g @goiam/react-*.tgz
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

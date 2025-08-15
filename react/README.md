@@ -5,9 +5,9 @@ A React SDK for integrating with Go-IAM (Identity and Access Management) server.
 ## Installation
 
 ```bash
-npm install goiam-react
+npm install @goiam/react
 # or
-yarn add goiam-react
+yarn add @goiam/react
 ```
 
 ## Features
@@ -29,7 +29,7 @@ Wrap your application with the `GoIamProvider`:
 
 ```tsx
 import React from 'react';
-import { GoIamProvider, createGoIamConfig } from 'goiam-react';
+import { GoIamProvider, createGoIamConfig } from '@goiam/react';
 import App from './App';
 
 const config = createGoIamConfig({
@@ -55,7 +55,7 @@ Access authentication state and methods:
 
 ```tsx
 import React from 'react';
-import { useGoIam } from 'goiam-react';
+import { useGoIam } from '@goiam/react';
 
 function LoginButton() {
   const { isAuthenticated, user, login, logout, isLoading } = useGoIam();
@@ -83,7 +83,7 @@ Use the `AuthGuard` component to protect routes:
 
 ```tsx
 import React from 'react';
-import { AuthGuard } from 'goiam-react';
+import { AuthGuard } from '@goiam/react';
 import Dashboard from './Dashboard';
 
 function ProtectedDashboard() {
@@ -202,7 +202,7 @@ Component to protect routes based on authentication and roles.
 Higher-order component version of AuthGuard:
 
 ```tsx
-import { withAuthGuard } from 'goiam-react';
+import { withAuthGuard } from '@goiam/react';
 
 const ProtectedComponent = withAuthGuard(MyComponent, {
   requiredRoles: ['admin'],
@@ -215,7 +215,7 @@ const ProtectedComponent = withAuthGuard(MyComponent, {
 Low-level client for direct API interactions:
 
 ```tsx
-import { GoIamClient } from 'goiam-react';
+import { GoIamClient } from '@goiam/react';
 
 const client = new GoIamClient(config);
 
@@ -314,7 +314,7 @@ const CustomLoader = () => (
 The SDK is built with TypeScript and provides comprehensive type definitions:
 
 ```tsx
-import type { GoIamConfig, User, AuthState, GoIamContextValue } from 'goiam-react';
+import type { GoIamConfig, User, AuthState, GoIamContextValue } from '@goiam/react';
 
 // Type-safe configuration
 const config: GoIamConfig = {
@@ -359,7 +359,7 @@ import { GoIamProvider, useGoIam, AuthGuard } from '../src/index';
 **For Published Package:**
 
 ```tsx
-import { GoIamProvider, useGoIam, AuthGuard } from 'goiam-react';
+import { GoIamProvider, useGoIam, AuthGuard } from '@goiam/react';
 ```
 
 ## Development

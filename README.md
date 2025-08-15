@@ -57,11 +57,11 @@ tokio = { version = "1.0", features = ["full"] }
 ### React
 
 ```bash
-npm install goiam-react
+npm install @goiam/react
 # or
-pnpm add goiam-react
+pnpm add @goiam/react
 # or
-yarn add goiam-react
+yarn add @goiam/react
 ```
 
 ## Usage
@@ -285,14 +285,14 @@ match service.create_resource(&resource, &token).await {
 
 ### React
 
-[![npm version](https://badge.fury.io/js/goiam-react.svg)](https://badge.fury.io/js/goiam-react)
-[![npm downloads](https://img.shields.io/npm/dm/goiam-react.svg)](https://www.npmjs.com/package/goiam-react)
+[![npm version](https://badge.fury.io/js/@goiam/react.svg)](https://badge.fury.io/js/@goiam/react)
+[![npm downloads](https://img.shields.io/npm/dm/@goiam/react.svg)](https://www.npmjs.com/package/@goiam/react)
 
 #### Setup Provider
 
 ```tsx
 import React from "react";
-import { GoIamProvider, createGoIamConfig } from "goiam-react";
+import { GoIamProvider, createGoIamConfig } from "@goiam/react";
 
 const config = createGoIamConfig({
   baseUrl: "https://go-iam.example.com",
@@ -312,7 +312,7 @@ function App() {
 #### Authentication Hook
 
 ```tsx
-import { useGoIam } from "goiam-react";
+import { useGoIam } from "@goiam/react";
 
 function LoginButton() {
   const { isAuthenticated, user, login, logout, isLoading } = useGoIam();
@@ -335,7 +335,7 @@ function LoginButton() {
 #### Protect Routes
 
 ```tsx
-import { AuthGuard } from "goiam-react";
+import { AuthGuard } from "@goiam/react";
 
 function ProtectedRoute() {
   return (

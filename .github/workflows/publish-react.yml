@@ -80,11 +80,6 @@ jobs:
           echo "version=${TAG_VERSION}" >> $GITHUB_OUTPUT
           echo "Extracted version: ${TAG_VERSION}"
 
-      - name: Update package version
-        run: |
-          npm version ${{ steps.extract_version.outputs.version }} --no-git-tag-version
-          echo "Updated package.json version to ${{ steps.extract_version.outputs.version }}"
-
       - name: Verify package can be packed
         run: |
           npm pack --dry-run
@@ -117,12 +112,12 @@ jobs:
 
             ### Installation
             ```bash
-            npm install goiam-react@${{ steps.extract_version.outputs.version }}
+            npm install @goiam/react@${{ steps.extract_version.outputs.version }}
             ```
 
             ### Usage
             ```tsx
-            import { GoIamProvider, useGoIam, AuthGuard } from 'goiam-react';
+            import { GoIamProvider, useGoIam, AuthGuard } from '@goiam/react';
             ```
 
             See [React SDK Documentation](https://github.com/melvinodsa/go-iam-sdk/tree/main/react) for complete usage guide.
@@ -148,7 +143,7 @@ jobs:
         run: |
           echo "Package published successfully!"
           echo "Version: ${{ steps.extract_version.outputs.version }}"
-          echo "NPM: https://www.npmjs.com/package/goiam-react"
+          echo "NPM: https://www.npmjs.com/package/@goiam/react"
 
       - name: Notify success
         run: |

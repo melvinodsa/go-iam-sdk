@@ -17,7 +17,7 @@ import { GoIamProvider, useGoIam, AuthGuard, createGoIamConfig } from '../src/in
 When the package is published to npm, import from the package name:
 
 ```tsx
-import { GoIamProvider, useGoIam, AuthGuard, createGoIamConfig } from 'goiam-react';
+import { GoIamProvider, useGoIam, AuthGuard, createGoIamConfig } from '@goiam/react';
 ```
 
 ## Testing Examples Locally
@@ -31,7 +31,7 @@ If you want to test the examples as if they were using the published package, yo
 npm run link:local
 
 # In your test project
-npm link goiam-react
+npm link @goiam/react
 ```
 
 ### Option 2: Install locally built package

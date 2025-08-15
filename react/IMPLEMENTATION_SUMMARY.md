@@ -164,7 +164,7 @@ const { isAuthenticated, user, login, logout } = useGoIam();
 ### Basic Setup
 
 ```typescript
-import { GoIamProvider, createGoIamConfig } from 'goiam-react';
+import { GoIamProvider, createGoIamConfig } from '@goiam/react';
 
 const config = createGoIamConfig({
   baseUrl: 'https://your-goiam-server.com',
@@ -249,7 +249,7 @@ function ProtectedRoute() {
 
 ## 📦 Package Details
 
-- **Name**: `goiam-react`
+- **Name**: `@goiam/react`
 - **Version**: `0.1.0`
 - **Size**: Optimized for minimal bundle impact
 - **Dependencies**: No runtime dependencies (React is peer dependency)

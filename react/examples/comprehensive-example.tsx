@@ -17,7 +17,7 @@ import {
 //     AuthGuard,
 //     withAuthGuard,
 //     createGoIamConfig
-// } from 'goiam-react';
+// } from '@goiam/react';
 
 // === CONFIGURATION ===
 const config = createGoIamConfig({
@@ -209,8 +209,8 @@ To use this example:
    - Make sure the React SDK is built: npm run build
 
 4. For production:
-   - Change import to 'goiam-react'
-   - Install the package: npm install goiam-react
+   - Change import to '@goiam/react'
+   - Install the package: npm install @goiam/react
 
 5. Add CSS classes for styling:
    .loading, .user-info, .login-prompt, .dashboard, .admin-panel,
