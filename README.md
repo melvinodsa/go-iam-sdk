@@ -1,6 +1,14 @@
 # Go IAM SDK
 
-The Go IAM SDK is a lightweight library for integrating with the Go IAM server. It provides methods for authentication, user management, and resource creation.
+The Go IAM SDK is a comprehensive multi-language library for integrating with the Go IAM server. It provides methods for authentication, user management, and resource creation across multiple programming languages and frameworks.
+
+**Available SDKs:**
+
+- **Go** - Server-side applications
+- **TypeScript** - Node.js and browser applications
+- **Python** - Python applications with async support
+- **Rust** - High-performance applications
+- **React** - Frontend React applications with Context, hooks, and components
 
 > ✅ Admin UI: [go-iam-ui](https://github.com/melvinodsa/go-iam-ui)  
 > 🐳 Docker Setup: [go-iam-docker](https://github.com/melvinodsa/go-iam-docker)  
@@ -44,6 +52,16 @@ Add to your `Cargo.toml`:
 [dependencies]
 goiam = "0.1.0"
 tokio = { version = "1.0", features = ["full"] }
+```
+
+### React
+
+```bash
+npm install goiam-react
+# or
+pnpm add goiam-react
+# or
+yarn add goiam-react
 ```
 
 ## Usage
@@ -264,3 +282,117 @@ match service.create_resource(&resource, &token).await {
     Err(error) => eprintln!("Failed to create resource: {}", error),
 }
 ```
+
+### React
+
+[![npm version](https://badge.fury.io/js/goiam-react.svg)](https://badge.fury.io/js/goiam-react)
+[![npm downloads](https://img.shields.io/npm/dm/goiam-react.svg)](https://www.npmjs.com/package/goiam-react)
+
+#### Setup Provider
+
+```tsx
+import React from "react";
+import { GoIamProvider, createGoIamConfig } from "goiam-react";
+
+const config = createGoIamConfig({
+  baseUrl: "https://go-iam.example.com",
+  clientId: "your-client-id",
+  redirectUrl: "https://your-app.com/callback",
+});
+
+function App() {
+  return (
+    <GoIamProvider config={config}>
+      <YourApp />
+    </GoIamProvider>
+  );
+}
+```
+
+#### Authentication Hook
+
+```tsx
+import { useGoIam } from "goiam-react";
+
+function LoginButton() {
+  const { isAuthenticated, user, login, logout, isLoading } = useGoIam();
+
+  if (isLoading) return <div>Loading...</div>;
+
+  if (isAuthenticated) {
+    return (
+      <div>
+        <p>Welcome, {user?.name || user?.email}!</p>
+        <button onClick={logout}>Logout</button>
+      </div>
+    );
+  }
+
+  return <button onClick={login}>Login</button>;
+}
+```
+
+#### Protect Routes
+
+```tsx
+import { AuthGuard } from "goiam-react";
+
+function ProtectedRoute() {
+  return (
+    <AuthGuard requiredRoles={["admin"]} redirectToLogin={true}>
+      <AdminDashboard />
+    </AuthGuard>
+  );
+}
+```
+
+## Repository Structure
+
+This repository contains multiple SDK implementations for different languages and frameworks:
+
+```
+go-iam-sdk/
+├── golang/          # Go SDK - Server-side applications
+├── typescript/      # TypeScript SDK - Node.js and browser
+├── python/          # Python SDK - Python applications
+├── rust/            # Rust SDK - High-performance applications
+└── react/           # React SDK - React applications with hooks and components
+```
+
+### SDK Documentation
+
+Each SDK has its own comprehensive documentation:
+
+- **[Go SDK](golang/README.md)** - Server-side Go applications
+- **[TypeScript SDK](typescript/README.md)** - Node.js and browser JavaScript/TypeScript
+- **[Python SDK](python/README.md)** - Python applications with asyncio support
+- **[Rust SDK](rust/README.md)** - High-performance Rust applications
+- **[React SDK](react/README.md)** - React applications with Context, hooks, and components
+
+### Features by SDK
+
+| Feature             | Go  | TypeScript | Python | Rust | React |
+| ------------------- | --- | ---------- | ------ | ---- | ----- |
+| Authentication      | ✅  | ✅         | ✅     | ✅   | ✅    |
+| User Management     | ✅  | ✅         | ✅     | ✅   | ✅    |
+| Resource Management | ✅  | ✅         | ✅     | ✅   | N/A   |
+| Context Provider    | N/A | N/A        | N/A    | N/A  | ✅    |
+| Auth Guards         | N/A | N/A        | N/A    | N/A  | ✅    |
+| Role-based Access   | ✅  | ✅         | ✅     | ✅   | ✅    |
+| TypeScript Support  | N/A | ✅         | N/A    | N/A  | ✅    |
+| Async/Await         | N/A | ✅         | ✅     | ✅   | ✅    |
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes in the appropriate SDK directory
+4. Add tests for your changes
+5. Ensure all tests pass (`make test` in the SDK directory)
+6. Commit your changes (`git commit -m 'Add some amazing feature'`)
+7. Push to the branch (`git push origin feature/amazing-feature`)
+8. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

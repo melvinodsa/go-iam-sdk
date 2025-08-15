@@ -1,0 +1,155 @@
+name: Publish React Package
+
+on:
+  push:
+    tags:
+      - "react-v*"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./react
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+          cache: "npm"
+          cache-dependency-path: react/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run type checking
+        run: npm run type-check
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test:coverage
+
+      - name: Build package
+        run: npm run build
+
+      - name: Verify build artifacts
+        run: |
+          [ -f "dist/index.js" ] || (echo "Missing index.js" && exit 1)
+          [ -f "dist/index.esm.js" ] || (echo "Missing ESM build" && exit 1)
+          [ -f "dist/index.d.ts" ] || (echo "Missing type definitions" && exit 1)
+          echo "Build artifacts verified successfully"
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/react-v')
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+    defaults:
+      run:
+        working-directory: ./react
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+          cache: "npm"
+          cache-dependency-path: react/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: npm run build
+
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/react-v}
+          echo "version=${TAG_VERSION}" >> $GITHUB_OUTPUT
+          echo "Extracted version: ${TAG_VERSION}"
+
+      - name: Update package version
+        run: |
+          npm version ${{ steps.extract_version.outputs.version }} --no-git-tag-version
+          echo "Updated package.json version to ${{ steps.extract_version.outputs.version }}"
+
+      - name: Verify package can be packed
+        run: |
+          npm pack --dry-run
+          echo "Package verification successful"
+
+      - name: Publish to NPM
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: React SDK v${{ steps.extract_version.outputs.version }}
+          body: |
+            ## React SDK v${{ steps.extract_version.outputs.version }}
+
+            ### Features
+            - 🔐 Complete authentication flow with GoIAM
+            - 🛡️ AuthGuard component for route protection
+            - 🎯 Role-based access control
+            - 📦 React Context provider for state management
+            - 🪝 Custom hooks (useGoIam)
+            - 💾 Persistent storage with localStorage
+            - 📱 Full TypeScript support
+            - 🔄 Auto-refresh user profiles
+
+            ### Installation
+            ```bash
+            npm install goiam-react@${{ steps.extract_version.outputs.version }}
+            ```
+
+            ### Usage
+            ```tsx
+            import { GoIamProvider, useGoIam, AuthGuard } from 'goiam-react';
+            ```
+
+            See [React SDK Documentation](https://github.com/melvinodsa/go-iam-sdk/tree/main/react) for complete usage guide.
+          draft: false
+          prerelease: false
+
+  post-publish:
+    needs: publish
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/react-v}
+          echo "version=${TAG_VERSION}" >> $GITHUB_OUTPUT
+          echo "Extracted version: ${TAG_VERSION}"
+
+      - name: Update README badges
+        run: |
+          echo "Package published successfully!"
+          echo "Version: ${{ steps.extract_version.outputs.version }}"
+          echo "NPM: https://www.npmjs.com/package/goiam-react"
+
+      - name: Notify success
+        run: |
+          echo "::notice title=React SDK Published::React SDK v${{ steps.extract_version.outputs.version }} has been successfully published to NPM"

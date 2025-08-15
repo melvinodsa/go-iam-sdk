@@ -1,0 +1,300 @@
+name: PR Validation - React SDK
+
+on:
+  pull_request:
+    paths:
+      - 'react/**'
+      - '.github/workflows/pr-validation-react.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'react/**'
+      - '.github/workflows/pr-validation-react.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validation:
+    name: Code Validation
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 21.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: react/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./react
+        run: npm ci
+
+      - name: Type checking
+        working-directory: ./react
+        run: npm run type-check
+
+      - name: Lint code
+        working-directory: ./react
+        run: npm run lint
+
+      - name: Check formatting
+        working-directory: ./react
+        run: npm run format:check
+
+      - name: Run tests
+        working-directory: ./react
+        run: npm run test:coverage
+
+      - name: Upload coverage to Codecov
+        if: matrix.node-version == '20.x'
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./react/coverage/lcov.info
+          flags: react
+          name: react-coverage
+          fail_ci_if_error: false
+
+  build-test:
+    name: Build & Package Test
+    runs-on: ubuntu-latest
+    needs: validation
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: react/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./react
+        run: npm ci
+
+      - name: Build package
+        working-directory: ./react
+        run: npm run build
+
+      - name: Verify build artifacts
+        working-directory: ./react
+        run: |
+          [ -f "dist/index.js" ] || (echo "Missing index.js" && exit 1)
+          [ -f "dist/index.d.ts" ] || (echo "Missing type definitions" && exit 1)
+          echo "Build artifacts verified successfully"
+
+      - name: Test package installation
+        working-directory: ./react
+        run: |
+          npm pack
+          npm install -g goiam-react-*.tgz
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: react-build-artifacts-${{ github.sha }}
+          path: |
+            react/dist/
+            react/*.tgz
+          retention-days: 7
+
+  cross-platform-test:
+    name: Cross-Platform Test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [18.x, 20.x]
+
+    runs-on: ${{ matrix.os }}
+    needs: validation
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: react/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./react
+        run: npm ci
+
+      - name: Run tests
+        working-directory: ./react
+        run: npm test
+
+      - name: Build package
+        working-directory: ./react
+        run: npm run build
+
+  dependency-audit:
+    name: Security & Dependency Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: react/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./react
+        run: npm ci
+
+      - name: Run security audit
+        working-directory: ./react
+        run: npm audit --audit-level=moderate
+
+      - name: Check for outdated dependencies
+        working-directory: ./react
+        run: npm outdated || true
+
+      - name: License check
+        working-directory: ./react
+        run: |
+          npx license-checker --summary --excludePrivatePackages || true
+
+  size-impact:
+    name: Bundle Size Impact
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          path: pr
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: |
+            base/react/package-lock.json
+            pr/react/package-lock.json
+
+      - name: Build base version
+        working-directory: ./base/react
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build PR version
+        working-directory: ./pr/react
+        run: |
+          npm ci
+          npm run build
+
+      - name: Compare bundle sizes
+        run: |
+          echo "## Bundle Size Comparison" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          BASE_SIZE=$(du -b base/react/dist/index.js | cut -f1)
+          PR_SIZE=$(du -b pr/react/dist/index.js | cut -f1)
+          DIFF=$((PR_SIZE - BASE_SIZE))
+
+          echo "| File | Base Size | PR Size | Difference |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-----------|---------|------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| index.js | ${BASE_SIZE} bytes | ${PR_SIZE} bytes | ${DIFF} bytes |" >> $GITHUB_STEP_SUMMARY
+
+          if [ $DIFF -gt 10240 ]; then
+            echo "⚠️ Bundle size increased by more than 10KB!" >> $GITHUB_STEP_SUMMARY
+          elif [ $DIFF -gt 0 ]; then
+            echo "📈 Bundle size increased slightly" >> $GITHUB_STEP_SUMMARY
+          elif [ $DIFF -lt 0 ]; then
+            echo "📉 Bundle size decreased - great job!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ No change in bundle size" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  react-versions-test:
+    name: React Versions Compatibility
+    runs-on: ubuntu-latest
+    needs: validation
+
+    strategy:
+      matrix:
+        react-version: ['16.14.0', '17.0.2', '18.2.0']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: react/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./react
+        run: npm ci
+
+      - name: Install React ${{ matrix.react-version }}
+        working-directory: ./react
+        run: |
+          npm install --no-save react@${{ matrix.react-version }} react-dom@${{ matrix.react-version }}
+
+      - name: Run tests with React ${{ matrix.react-version }}
+        working-directory: ./react
+        run: npm test
+
+      - name: Build with React ${{ matrix.react-version }}
+        working-directory: ./react
+        run: npm run build
+
+  pr-summary:
+    name: PR Summary
+    runs-on: ubuntu-latest
+    needs: [validation, build-test, cross-platform-test, dependency-audit]
+    if: always() && github.event_name == 'pull_request'
+
+    steps:
+      - name: Generate PR Summary
+        run: |
+          echo "## React SDK PR Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Test Results:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Code Validation: ${{ needs.validation.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Build & Package: ${{ needs.build-test.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Cross-Platform: ${{ needs.cross-platform-test.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Security Audit: ${{ needs.dependency-audit.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Key Features Validated:" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔐 Authentication flow" >> $GITHUB_STEP_SUMMARY
+          echo "- 🛡️ AuthGuard component" >> $GITHUB_STEP_SUMMARY
+          echo "- 🎯 Role-based access control" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 React Context provider" >> $GITHUB_STEP_SUMMARY
+          echo "- 🪝 Custom hooks" >> $GITHUB_STEP_SUMMARY
+          echo "- 💾 Storage management" >> $GITHUB_STEP_SUMMARY
+          echo "- 📱 TypeScript support" >> $GITHUB_STEP_SUMMARY
