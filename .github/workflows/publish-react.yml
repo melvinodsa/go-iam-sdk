@@ -90,40 +90,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: React SDK v${{ steps.extract_version.outputs.version }}
-          body: |
-            ## React SDK v${{ steps.extract_version.outputs.version }}
-
-            ### Features
-            - 🔐 Complete authentication flow with GoIAM
-            - 🛡️ AuthGuard component for route protection
-            - 🎯 Role-based access control
-            - 📦 React Context provider for state management
-            - 🪝 Custom hooks (useGoIam)
-            - 💾 Persistent storage with localStorage
-            - 📱 Full TypeScript support
-            - 🔄 Auto-refresh user profiles
-
-            ### Installation
-            ```bash
-            npm install @goiam/react@${{ steps.extract_version.outputs.version }}
-            ```
-
-            ### Usage
-            ```tsx
-            import { GoIamProvider, useGoIam, AuthGuard } from '@goiam/react';
-            ```
-
-            See [React SDK Documentation](https://github.com/melvinodsa/go-iam-sdk/tree/main/react) for complete usage guide.
-          draft: false
-          prerelease: false
-
   post-publish:
     needs: publish
     runs-on: ubuntu-latest
