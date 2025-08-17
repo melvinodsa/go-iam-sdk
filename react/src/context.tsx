@@ -89,14 +89,16 @@ export const GoIamProvider: React.FC<GoIamProviderProps> = ({
     }
   }, [client]);
 
-
-  const hasRequiredResources = useCallback((resources: string[]) => {
-    const user = client.getStoredUser();
-    if (!user) {
-      return false;
-    }
-    return client.hasRequiredResources(user, resources)
-  }, [client])
+  const hasRequiredResources = useCallback(
+    (resources: string[]) => {
+      const user = client.getStoredUser();
+      if (!user) {
+        return false;
+      }
+      return client.hasRequiredResources(user, resources);
+    },
+    [client]
+  );
 
   /**
    * Initialize authentication state on mount

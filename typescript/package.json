@@ -1,50 +1,50 @@
 {
-	"name": "@goiam/typescript",
-	"version": "0.1.1",
-	"description": "TypeScript SDK for Go IAM - A lightweight Identity and Access Management server",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"scripts": {
-		"build": "tsc",
-		"test": "jest",
-		"test:coverage": "jest --coverage",
-		"test:watch": "jest --watch",
-		"lint": "eslint . --ext .ts,.tsx",
-		"lint:fix": "eslint . --ext .ts,.tsx --fix",
-		"format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-		"format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
-		"type-check": "tsc --noEmit",
-		"clean": "rm -rf dist coverage",
-		"prepublishOnly": "npm run clean && npm run build",
-		"dev": "tsc --watch"
-	},
-	"keywords": [
-		"iam",
-		"authentication",
-		"authorization",
-		"golang",
-		"typescript"
-	],
-	"author": "melvinodsa",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/melvinodsa/go-iam-sdk.git",
-		"directory": "typescript"
-	},
-	"readme": "README.md",
-	"devDependencies": {
-		"@types/jest": "^30.0.0",
-		"@typescript-eslint/eslint-plugin": "^7.0.0",
-		"@typescript-eslint/parser": "^7.0.0",
-		"axios-mock-adapter": "^2.1.0",
-		"eslint": "^8.57.0",
-		"jest": "^30.0.5",
-		"prettier": "^3.0.0",
-		"ts-jest": "^29.4.1",
-		"typescript": "^5.0.0"
-	},
-	"dependencies": {
-		"axios": "^1.11.0"
-	}
+  "name": "@goiam/typescript",
+  "version": "0.1.1",
+  "description": "TypeScript SDK for Go IAM - A lightweight Identity and Access Management server",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist coverage",
+    "prepublishOnly": "npm run clean && npm run build",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "iam",
+    "authentication",
+    "authorization",
+    "golang",
+    "typescript"
+  ],
+  "author": "melvinodsa",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/melvinodsa/go-iam-sdk.git",
+    "directory": "typescript"
+  },
+  "readme": "README.md",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "axios-mock-adapter": "^2.1.0",
+    "eslint": "^8.57.0",
+    "jest": "^30.0.5",
+    "prettier": "^3.0.0",
+    "ts-jest": "^29.4.1",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.11.0"
+  }
 }

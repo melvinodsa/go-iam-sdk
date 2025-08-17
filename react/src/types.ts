@@ -174,7 +174,7 @@ export interface ApiError {
 /**
  * Hook return type for useGoIam
  */
-export interface UseGoIamReturn extends GoIamContextValue { }
+export interface UseGoIamReturn extends GoIamContextValue {}
 
 /**
  * Storage interface for user data persistence

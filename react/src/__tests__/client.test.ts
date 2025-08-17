@@ -96,7 +96,7 @@ describe('GoIamClient', () => {
       resources: {},
       policies: {},
       created_by: 'system',
-      updated_by: 'system'
+      updated_by: 'system',
     };
 
     it('should store user data', () => {
@@ -147,12 +147,12 @@ describe('GoIamClient', () => {
           role_ids: {},
           policy_ids: { 'test-policy': true },
           name: 'Test Resource 1',
-          key: 'mytest-resource-1'
-        }
+          key: 'mytest-resource-1',
+        },
       },
       policies: {},
       created_by: 'system',
-      updated_by: 'system'
+      updated_by: 'system',
     };
 
     it('should return true when user has all required resources', () => {
