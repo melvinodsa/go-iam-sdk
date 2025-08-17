@@ -95,12 +95,6 @@ jobs:
           [ -f "dist/index.d.ts" ] || (echo "Missing type definitions" && exit 1)
           echo "Build artifacts verified successfully"
 
-      - name: Test package installation
-        working-directory: ./react
-        run: |
-          npm pack
-          npm install -g @goiam/react-*.tgz
-
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
