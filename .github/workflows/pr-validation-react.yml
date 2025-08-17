@@ -5,11 +5,6 @@ on:
     paths:
       - "react/**"
       - ".github/workflows/pr-validation-react.yml"
-  push:
-    branches: [main]
-    paths:
-      - "react/**"
-      - ".github/workflows/pr-validation-react.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
