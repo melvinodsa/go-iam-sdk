@@ -50,7 +50,8 @@ class UserRole:
 
 class UserResource:
     def __init__(self, data: Dict[str, Any]):
-        self.id: str = data.get("id", "")
+        self.role_ids: Dict[str, bool] = data.get("role_ids", {})
+        self.policy_ids: Dict[str, bool] = data.get("policy_ids", {})
         self.key: str = data.get("key", "")
         self.name: str = data.get("name", "")
 

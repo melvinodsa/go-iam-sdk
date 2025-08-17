@@ -90,6 +90,13 @@ describe('GoIamClient', () => {
       id: '123',
       email: 'test@example.com',
       name: 'Test User',
+      project_id: 'test-project',
+      enabled: true,
+      roles: {},
+      resources: {},
+      policies: {},
+      created_by: 'system',
+      updated_by: 'system'
     };
 
     it('should store user data', () => {
@@ -128,31 +135,44 @@ describe('GoIamClient', () => {
     });
   });
 
-  describe('hasRequiredRoles', () => {
+  describe('hasRequiredResources', () => {
     const mockUser = {
       id: '123',
       email: 'test@example.com',
-      roles: ['user', 'admin'],
+      project_id: 'test-project',
+      enabled: true,
+      roles: {},
+      resources: {
+        'mytest-resource-1': {
+          role_ids: {},
+          policy_ids: { 'test-policy': true },
+          name: 'Test Resource 1',
+          key: 'mytest-resource-1'
+        }
+      },
+      policies: {},
+      created_by: 'system',
+      updated_by: 'system'
     };
 
-    it('should return true when user has all required roles', () => {
-      const result = client.hasRequiredRoles(mockUser, ['user']);
+    it('should return true when user has all required resources', () => {
+      const result = client.hasRequiredResources(mockUser, ['mytest-resource-1']);
       expect(result).toBe(true);
     });
 
-    it('should return true when no roles required', () => {
-      const result = client.hasRequiredRoles(mockUser, []);
+    it('should return true when no resources required', () => {
+      const result = client.hasRequiredResources(mockUser, []);
       expect(result).toBe(true);
     });
 
-    it('should return false when user lacks required roles', () => {
-      const result = client.hasRequiredRoles(mockUser, ['super-admin']);
+    it('should return false when user lacks required resources', () => {
+      const result = client.hasRequiredResources(mockUser, ['my-super-privleged-button']);
       expect(result).toBe(false);
     });
 
-    it('should return false when user has no roles', () => {
-      const userWithoutRoles = { ...mockUser, roles: undefined };
-      const result = client.hasRequiredRoles(userWithoutRoles, ['user']);
+    it('should return false when user has no resources', () => {
+      const userWithoutRoles = { ...mockUser, resources: {} };
+      const result = client.hasRequiredResources(userWithoutRoles, ['my-special-button']);
       expect(result).toBe(false);
     });
   });

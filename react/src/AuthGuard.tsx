@@ -49,10 +49,10 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   children,
   fallback: FallbackComponent = DefaultUnauthenticatedComponent,
   redirectToLogin = false,
-  requiredRoles = [],
+  requiredResources = [],
   unauthorizedComponent: UnauthorizedComponent = DefaultUnauthorizedComponent,
 }) => {
-  const { isAuthenticated, isLoading, user, login } = useGoIam();
+  const { isAuthenticated, isLoading, user, login, hasRequiredResources } = useGoIam();
 
   // Show loading state
   if (isLoading) {
@@ -100,12 +100,11 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     return <FallbackComponent />;
   }
 
-  // Check role-based authorization
-  if (requiredRoles.length > 0 && user) {
-    const userRoles = user.roles || [];
-    const hasRequiredRoles = requiredRoles.every(role => userRoles.includes(role));
+  // Check resource-based authorization
+  if (requiredResources.length > 0 && user) {
+    const hasAccess = hasRequiredResources(requiredResources);
 
-    if (!hasRequiredRoles) {
+    if (!hasAccess) {
       return <UnauthorizedComponent />;
     }
   }

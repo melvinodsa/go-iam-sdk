@@ -45,9 +45,10 @@ type UserRole struct {
 }
 
 type UserResource struct {
-	Id   string `json:"id"`
-	Key  string `json:"key"`
-	Name string `json:"name"`
+	RoleIds   map[string]bool `bson:"role_ids"`
+	PolicyIds map[string]bool `bson:"policy_ids"`
+	Key       string          `json:"key"`
+	Name      string          `json:"name"`
 }
 
 type AuthVerifyCodeResponse struct {

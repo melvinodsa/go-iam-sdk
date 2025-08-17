@@ -7,15 +7,15 @@ export interface User {
   email: string;
   phone: string;
   enabled: boolean;
-  profilePic: string;
+  profile_pic: string;
   expiry?: string;
   roles: Record<string, UserRole>;
   resources: Record<string, UserResource>;
   policies: Record<string, UserPolicy>;
-  createdAt?: string;
-  createdBy: string;
-  updatedAt?: string;
-  updatedBy: string;
+  created_at?: string;
+  created_by: string;
+  updated_at?: string;
+  updated_by: string;
 }
 
 export interface UserPolicy {
@@ -37,7 +37,8 @@ export interface UserRole {
 }
 
 export interface UserResource {
-  id: string;
+  role_ids: { [key: string]: boolean };
+  policy_ids: { [key: string]: boolean };
   key: string;
   name: string;
 }
@@ -48,12 +49,12 @@ export interface Resource {
   description: string;
   key: string;
   enabled: boolean;
-  projectId: string;
-  createdAt?: string;
-  createdBy: string;
-  updatedAt?: string;
-  updatedBy: string;
-  deletedAt?: string;
+  project_id: string;
+  created_at?: string;
+  created_by: string;
+  updated_at?: string;
+  updated_by: string;
+  deleted_at?: string;
 }
 
 export class GoIamSdk {

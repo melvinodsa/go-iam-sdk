@@ -45,7 +45,8 @@ pub struct UserRole {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct UserResource {
-    pub id: String,
+    pub role_ids: HashMap<String, bool>,
+    pub policy_ids: HashMap<String, bool>,
     pub key: String,
     pub name: String,
 }
@@ -129,7 +130,8 @@ mod tests {
         resources.insert(
             "resource-1".to_string(),
             UserResource {
-                id: "res-1".to_string(),
+                role_ids: HashMap::new(),
+                policy_ids: HashMap::new(),
                 key: "users".to_string(),
                 name: "User Management".to_string(),
             },
@@ -291,13 +293,13 @@ mod tests {
     #[test]
     fn test_user_resource_serialization() {
         let resource = UserResource {
-            id: "res-1".to_string(),
+            role_ids: HashMap::new(),
+            policy_ids: HashMap::new(),
             key: "users".to_string(),
             name: "User Management".to_string(),
         };
 
         let json = serde_json::to_string(&resource).expect("Failed to serialize user resource");
-        assert!(json.contains("\"id\":\"res-1\""));
         assert!(json.contains("\"key\":\"users\""));
         assert!(json.contains("\"name\":\"User Management\""));
     }

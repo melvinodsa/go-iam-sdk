@@ -26,7 +26,6 @@ function AuthButton() {
         return (
             <div>
                 <p>Welcome, {user.name || user.email}!</p>
-                <p>Roles: {user.roles?.join(', ') || 'None'}</p>
                 <button onClick={logout}>Logout</button>
             </div>
         );
@@ -64,7 +63,7 @@ function AdminPanel() {
 
 // Create HOC version
 const ProtectedAdminPanel = withAuthGuard(AdminPanel, {
-    requiredRoles: ['admin'],
+    requiredResources: ['@ui/admin/panel'],
     redirectToLogin: true,
 });
 
@@ -112,7 +111,7 @@ function App() {
             case 'admin':
                 return (
                     <AuthGuard
-                        requiredRoles={['admin']}
+                        requiredResources={['@ui/admin']}
                         unauthorizedComponent={AccessDenied}
                     >
                         <AdminPanel />

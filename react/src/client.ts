@@ -127,19 +127,19 @@ export class GoIamClient {
   /**
    * Check if user has required roles
    * @param user User object
-   * @param requiredRoles Array of required roles
-   * @returns Boolean indicating if user has required roles
+   * @param requiredResources Array of required resources
+   * @returns Boolean indicating if user has required resources
    */
-  hasRequiredRoles(user: User, requiredRoles: string[]): boolean {
-    if (!requiredRoles || requiredRoles.length === 0) {
+  hasRequiredResources(user: User, requiredResources: string[]): boolean {
+    if (!requiredResources || requiredResources.length === 0) {
       return true;
     }
 
-    if (!user.roles || user.roles.length === 0) {
+    if (!user.resources || Object.keys(user.resources).length === 0) {
       return false;
     }
 
-    return requiredRoles.every(role => user.roles!.includes(role));
+    return requiredResources.every(resource => user.resources[resource]);
   }
 
   /**

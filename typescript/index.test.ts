@@ -72,9 +72,9 @@ describe('GoIamSdk', () => {
         description: 'A test resource',
         key: 'test-key',
         enabled: true,
-        projectId: 'project-id',
-        createdBy: 'creator',
-        updatedBy: 'updater',
+        project_id: 'project-id',
+        created_by: 'creator',
+        updated_by: 'updater',
       };
 
       await expect(
@@ -93,9 +93,9 @@ describe('GoIamSdk', () => {
         description: 'A test resource',
         key: 'test-key',
         enabled: true,
-        projectId: 'project-id',
-        createdBy: 'creator',
-        updatedBy: 'updater',
+        project_id: 'project-id',
+        created_by: 'creator',
+        updated_by: 'updater',
       };
 
       await expect(
