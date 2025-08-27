@@ -73,6 +73,25 @@ export class GoIamClient {
     }
   }
 
+
+  /**
+   * Get access token using authorization code
+   * @param tokenVerificationEndpoint Token verification endpoint
+   * @param code Authorization code
+   * @returns Promise resolving to access token or null
+   */
+  async getAccessToken(tokenVerificationEndpoint: string, code: string): Promise<string | null> {
+    try {
+      const response = await this.makeApiCall<{ access_token: string }>(tokenVerificationEndpoint + `?code=${code}`, {
+        method: 'GET',
+      });
+
+      return response.data.access_token;
+    } catch (error) {
+      throw this.handleApiError(error);
+    }
+  }
+
   /**
    * Store user data in local storage
    * @param user User data to store
