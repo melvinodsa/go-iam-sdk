@@ -100,6 +100,32 @@ export const GoIamProvider: React.FC<GoIamProviderProps> = ({
     [client]
   );
 
+  const getAccessToken = useCallback(
+    async (codeChallenge: string, code: string) => {
+      try {
+        setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
+        const token = await client.getAccessToken(codeChallenge, code);
+        if (!token) {
+          throw new Error('No access token received');
+        }
+        client.storeAccessToken(token);
+        setAuthState(prev => ({ ...prev, isLoading: false, error: null, isAuthenticated: true, }));
+        return token;
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to get access token';
+
+        setAuthState({
+          isAuthenticated: false,
+          isLoading: false,
+          user: null,
+          error: errorMessage,
+        });
+        return null;
+      }
+    },
+    [client]
+  );
+
   /**
    * Initialize authentication state on mount
    */
@@ -176,6 +202,7 @@ export const GoIamProvider: React.FC<GoIamProviderProps> = ({
     refreshUser,
     hasRequiredResources,
     config,
+    getAccessToken,
   };
 
   // Show loading component while initializing

@@ -31,9 +31,16 @@ describe('GoIamClient', () => {
   describe('getAuthUrl', () => {
     it('should generate correct auth URL', () => {
       const authUrl = client.getAuthUrl();
-      const expected =
-        'https://api.example.com/auth/v1/login?client_id=test-client-id&redirect_url=https%3A%2F%2Fapp.example.com%2Fcallback';
-      expect(authUrl).toBe(expected);
+      // parse authUrl
+      const url = new URL(authUrl);
+      const params = Object.fromEntries(url.searchParams.entries());
+      expect(url.origin + url.pathname).toBe('https://api.example.com/auth/v1/login');
+      expect(params).toEqual({
+        client_id: 'test-client-id',
+        redirect_url: 'https://app.example.com/callback',
+        code_challenge: expect.any(String),
+        code_challenge_method: 'S256',
+      });
     });
 
     it('should handle special characters in URLs', () => {
@@ -43,9 +50,15 @@ describe('GoIamClient', () => {
       });
 
       const authUrl = clientWithSpecialChars.getAuthUrl();
-      expect(authUrl).toContain(
-        'redirect_url=https%3A%2F%2Fapp.example.com%2Fcallback%3Fparam%3Dvalue%26other%3Dtest'
-      );
+      const url = new URL(authUrl);
+      const params = Object.fromEntries(url.searchParams.entries());
+
+      expect(params).toEqual({
+        client_id: 'test-client-id',
+        redirect_url: 'https://app.example.com/callback?param=value&other=test',
+        code_challenge: expect.any(String),
+        code_challenge_method: 'S256',
+      });
     });
   });
 

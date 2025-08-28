@@ -40,13 +40,18 @@ export class GoIamClient {
    * @returns Complete authentication URL
    */
   getAuthUrl(): string {
+    const { code_challenge, code_challenge_method } = generatePKCECodes();
     const params = new URLSearchParams({
       client_id: this.config.clientId,
       redirect_url: this.config.redirectUrl,
+      code_challenge,
+      code_challenge_method,
     });
 
     return `${this.config.baseUrl}/auth/v1/login?${params.toString()}`;
   }
+
+
 
   /**
    * Redirect to authentication URL
@@ -65,6 +70,9 @@ export class GoIamClient {
     try {
       const response = await this.makeApiCall<User>('/me/v1', {
         method: 'GET',
+        headers: {
+          Authorization: `Bearer ${this.getStoredAccessToken()}`,
+        },
       });
 
       return response.data;
@@ -76,13 +84,18 @@ export class GoIamClient {
 
   /**
    * Get access token using authorization code
-   * @param tokenVerificationEndpoint Token verification endpoint
+   * @param codeChallenge Code challenge from authentication URL
    * @param code Authorization code
    * @returns Promise resolving to access token or null
    */
-  async getAccessToken(tokenVerificationEndpoint: string, code: string): Promise<string | null> {
+  async getAccessToken(codeChallenge: string, code: string): Promise<string | null> {
     try {
-      const response = await this.makeApiCall<{ access_token: string }>(tokenVerificationEndpoint + `?code=${code}`, {
+      const params = new URLSearchParams({
+        client_id: this.config.clientId,
+        code: code,
+        code_challenge: codeChallenge,
+      });
+      const response = await this.makeApiCall<{ access_token: string }>(`${this.config.baseUrl}/auth/v1/verify?${params.toString()}`, {
         method: 'GET',
       });
 
@@ -102,6 +115,23 @@ export class GoIamClient {
       this.storage.setItem(this.config.storageKey!, userData);
     } catch (error) {
       console.error('Failed to store user data:', error);
+    }
+  }
+
+  storeAccessToken(token: string): void {
+    try {
+      this.storage.setItem(`${this.config.storageKey!}_token`, token);
+    } catch (error) {
+      console.error('Failed to store access token:', error);
+    }
+  }
+
+  getStoredAccessToken(): string | null {
+    try {
+      return this.storage.getItem(`${this.config.storageKey!}_token`);
+    } catch (error) {
+      console.error('Failed to retrieve access token:', error);
+      return null;
     }
   }
 
@@ -231,4 +261,19 @@ export class GoIamClient {
 
     return new Error('An unknown error occurred');
   }
+}
+
+
+function base64URLEncode(str: Uint8Array<ArrayBuffer>) {
+  return btoa(String.fromCharCode(...Array.from(str)))
+    .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "")
+}
+
+function generatePKCECodes() {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  const code_challenge = base64URLEncode(array);
+  const code_challenge_method = "S256";
+
+  return { code_challenge, code_challenge_method };
 }

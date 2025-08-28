@@ -77,7 +77,46 @@ function LoginButton() {
 }
 ```
 
-### 3. Protect Routes with Auth Guard
+### 3. Fetch access token from callback
+
+Once authentication is completed, go iam server redirects to you application. Pass code challenge param and code param to finish the authentication
+
+```tsx
+import React, { useEffect } from 'react';
+import { useGoIam } from '@goiam/react';
+
+function CallbackScreen() {
+  const { isAuthenticated, user, getAccessToken, isLoading } = useGoIam();
+
+  useEffect(() => {
+    // Extract parameters from URL query string
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const codeChallenge = urlParams.get('code_challenge'); // or get from where you stored it
+
+    if (code && codeChallenge && !isAuthenticated && !isLoading) {
+      // Call getAccessToken to complete authentication
+      getAccessToken(codeChallenge, code);
+    }
+  }, [getAccessToken, isAuthenticated, isLoading]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isAuthenticated && user) {
+    return (
+      <div>
+        <p>Welcome back, {user.name || user.email}!</p>
+      </div>
+    );
+  }
+
+  return <div>Failed to complete the auth</div>;
+}
+```
+
+### 4. Protect Routes with Auth Guard
 
 Use the `AuthGuard` component to protect routes:
 

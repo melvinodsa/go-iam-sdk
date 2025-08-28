@@ -113,6 +113,8 @@ export interface GoIamContextValue extends AuthState {
   refreshUser: () => Promise<void>;
   /** hasRequiredResources checks if the user has the required resources */
   hasRequiredResources: (resources: string[]) => boolean;
+  /** Get access token using authorization code and code challenge */
+  getAccessToken: (codeChallenge: string, code: string) => Promise<string | null>;
   /** GoIAM configuration */
   config: GoIamConfig;
 }
@@ -174,7 +176,7 @@ export interface ApiError {
 /**
  * Hook return type for useGoIam
  */
-export interface UseGoIamReturn extends GoIamContextValue {}
+export interface UseGoIamReturn extends GoIamContextValue { }
 
 /**
  * Storage interface for user data persistence
