@@ -85,6 +85,7 @@ describe('GoIamClient', () => {
           method: 'GET',
           headers: expect.objectContaining({
             'Content-Type': 'application/json',
+            "Authorization": "Bearer undefined"
           }),
         })
       );

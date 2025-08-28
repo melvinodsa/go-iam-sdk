@@ -71,6 +71,7 @@ export class GoIamClient {
       const response = await this.makeApiCall<User>('/me/v1', {
         method: 'GET',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${this.getStoredAccessToken()}`,
         },
       });
