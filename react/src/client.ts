@@ -36,6 +36,14 @@ export class GoIamClient {
   }
 
   /**
+   * Set the client ID
+   * @param clientId client of the public client
+   */
+  setClientId(clientId: string): void {
+    this.config.clientId = clientId;
+  }
+
+  /**
    * Generate authentication URL
    * @returns Complete authentication URL
    */
