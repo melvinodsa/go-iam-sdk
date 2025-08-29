@@ -1,5 +1,12 @@
 # GoIAM React SDK
-
+<div className="flex gap-2 mb-4">
+  <a href="https://badge.fury.io/js/@goiam%2Freact" target="_blank" rel="noopener noreferrer" className="mr-4">
+    <img src="https://badge.fury.io/js/@goiam%2Freact.svg" alt="npm version" />
+  </a>
+  <a href="https://www.npmjs.com/package/@goiam/react" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/npm/dm/@goiam/react.svg" alt="npm downloads" />
+  </a>
+</div>
 A React SDK for integrating with Go-IAM (Identity and Access Management) server. This package provides React hooks and utilities for handling authentication in your React applications using [Hookstate](https://hookstate.js.org/) for optimal performance and minimal re-renders.
 
 ## Installation
