@@ -14,6 +14,7 @@ module.exports = [
         file: packageJson.main,
         format: 'cjs',
         sourcemap: true,
+        exports: 'named',
       },
       {
         file: packageJson.module || 'dist/index.esm.js',
@@ -42,7 +43,7 @@ module.exports = [
         ],
       }),
     ],
-    external: ['react', 'react-dom'],
+    external: ['react', 'react-dom', 'react/jsx-runtime', /^react\//, /^react-dom\//],
   },
   {
     input: 'dist/index.d.ts',
