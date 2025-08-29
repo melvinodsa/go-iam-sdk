@@ -1,22 +1,6 @@
 import React from 'react';
 
 /**
- * Configuration interface for GoIAM client
- */
-export interface GoIamConfig {
-  /** Base URL of the GoIAM server */
-  baseUrl: string;
-  /** Client ID for authentication */
-  clientId: string;
-  /** Redirect URL after authentication */
-  redirectUrl: string;
-  /** Storage key for user data (optional, defaults to 'goiam_user') */
-  storageKey?: string;
-  /** API timeout in milliseconds (optional, defaults to 10000) */
-  timeout?: number;
-}
-
-/**
  * User profile data structure
  */
 export interface User {
@@ -87,49 +71,7 @@ export interface UserResource {
   key: string;
 }
 
-/**
- * Authentication state interface
- */
-export interface AuthState {
-  /** Whether the user is authenticated */
-  isAuthenticated: boolean;
-  /** Whether authentication is being checked */
-  isLoading: boolean;
-  /** Current user data */
-  user: User | null;
-  /** Any authentication error */
-  error: string | null;
-}
 
-/**
- * GoIAM context value interface
- */
-export interface GoIamContextValue extends AuthState {
-  /** Login function that redirects to auth URL */
-  login: () => void;
-  /** Logout function that clears user data */
-  logout: () => void;
-  /** Function to refresh user data */
-  refreshUser: () => Promise<void>;
-  /** hasRequiredResources checks if the user has the required resources */
-  hasRequiredResources: (resources: string[]) => boolean;
-  /** Get access token using authorization code and code challenge */
-  getAccessToken: (codeChallenge: string, code: string) => Promise<string | null>;
-  /** GoIAM configuration */
-  config: GoIamConfig;
-}
-
-/**
- * Props for GoIamProvider component
- */
-export interface GoIamProviderProps {
-  /** GoIAM configuration */
-  config: GoIamConfig;
-  /** Child components */
-  children: React.ReactNode;
-  /** Custom loading component */
-  loadingComponent?: React.ComponentType;
-}
 
 /**
  * Props for AuthGuard component
@@ -174,11 +116,6 @@ export interface ApiError {
 }
 
 /**
- * Hook return type for useGoIam
- */
-export interface UseGoIamReturn extends GoIamContextValue { }
-
-/**
  * Storage interface for user data persistence
  */
 export interface Storage {
@@ -188,4 +125,34 @@ export interface Storage {
   setItem: (key: string, value: string) => void;
   /** Remove item from storage */
   removeItem: (key: string) => void;
+}
+
+
+export interface Setup {
+  client_added: boolean
+  client_id: string
+}
+
+export interface DashboardMeResponse {
+  success: boolean
+  message: string
+  data: {
+    setup: Setup
+    user: User
+  }
+}
+
+export interface MeResponse {
+  success: boolean
+  message: string
+  data: User
+}
+
+
+export interface VerifyResponse {
+  success: boolean
+  message: string
+  data: {
+    access_token: string
+  }
 }

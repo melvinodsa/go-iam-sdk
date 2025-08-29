@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGoIam } from './context';
+import { useGoIam } from './state';
 import { AuthGuardProps } from './types';
 
 /**
@@ -52,10 +52,10 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   requiredResources = [],
   unauthorizedComponent: UnauthorizedComponent = DefaultUnauthorizedComponent,
 }) => {
-  const { isAuthenticated, isLoading, user, login, hasRequiredResources } = useGoIam();
+  const { user, loadingMe, login, hasRequiredResources } = useGoIam();
 
   // Show loading state
-  if (isLoading) {
+  if (loadingMe) {
     return (
       <div
         style={{
@@ -73,7 +73,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   }
 
   // Handle unauthenticated users
-  if (!isAuthenticated) {
+  if (!user) {
     if (redirectToLogin) {
       // Automatically redirect to login
       React.useEffect(() => {
