@@ -9,21 +9,22 @@ type UserResponse struct {
 }
 
 type User struct {
-	Id         string                  `json:"id"`
-	ProjectId  string                  `json:"project_id"`
-	Name       string                  `json:"name"`
-	Email      string                  `json:"email"`
-	Phone      string                  `json:"phone"`
-	Enabled    bool                    `json:"enabled"`
-	ProfilePic string                  `json:"profile_pic"`
-	Expiry     *time.Time              `json:"expiry"`
-	Roles      map[string]UserRole     `json:"roles"`
-	Resources  map[string]UserResource `json:"resources"`
-	Policies   map[string]UserPolicy   `json:"policies"`
-	CreatedAt  *time.Time              `json:"created_at"`
-	CreatedBy  string                  `json:"created_by"`
-	UpdatedAt  *time.Time              `json:"updated_at"`
-	UpdatedBy  string                  `json:"updated_by"`
+	Id             string                  `json:"id"`
+	ProjectId      string                  `json:"project_id"`
+	Name           string                  `json:"name"`
+	Email          string                  `json:"email"`
+	Phone          string                  `json:"phone"`
+	Enabled        bool                    `json:"enabled"`
+	ProfilePic     string                  `json:"profile_pic"`
+	LinkedClientId string                  `json:"linked_client_id,omitempty"`
+	Expiry         *time.Time              `json:"expiry"`
+	Roles          map[string]UserRole     `json:"roles"`
+	Resources      map[string]UserResource `json:"resources"`
+	Policies       map[string]UserPolicy   `json:"policies"`
+	CreatedAt      *time.Time              `json:"created_at"`
+	CreatedBy      string                  `json:"created_by"`
+	UpdatedAt      *time.Time              `json:"updated_at"`
+	UpdatedBy      string                  `json:"updated_by"`
 }
 
 type UserPolicy struct {
@@ -45,8 +46,8 @@ type UserRole struct {
 }
 
 type UserResource struct {
-	RoleIds   map[string]bool `bson:"role_ids"`
-	PolicyIds map[string]bool `bson:"policy_ids"`
+	RoleIds   map[string]bool `json:"role_ids"`
+	PolicyIds map[string]bool `json:"policy_ids"`
 	Key       string          `json:"key"`
 	Name      string          `json:"name"`
 }

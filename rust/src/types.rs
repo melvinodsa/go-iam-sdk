@@ -10,10 +10,12 @@ pub struct User {
     pub phone: String,
     pub enabled: bool,
     pub profile_pic: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub linked_client_id: Option<String>,
     pub expiry: Option<String>,
     pub roles: HashMap<String, UserRole>,
     pub resources: HashMap<String, UserResource>,
-    pub policies: HashMap<String, String>,
+    pub policies: HashMap<String, UserPolicy>,
     pub created_at: Option<String>,
     pub created_by: String,
     pub updated_at: Option<String>,
@@ -23,18 +25,20 @@ pub struct User {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct UserPolicy {
     pub name: String,
-    pub mapping: UserPolicyMapping,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mapping: Option<UserPolicyMapping>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct UserPolicyMapping {
-    pub arguments: HashMap<String, UserPolicyMappingValue>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub arguments: Option<HashMap<String, UserPolicyMappingValue>>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct UserPolicyMappingValue {
-    #[serde(rename = "static")]
-    pub static_value: String,
+    #[serde(rename = "static", skip_serializing_if = "Option::is_none")]
+    pub static_val: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -67,12 +71,12 @@ pub struct Resource {
 }
 
 impl Resource {
-    pub fn new(id: String, name: String) -> Self {
+    pub fn new(name: String, description: String, key: String) -> Self {
         Self {
-            id,
+            id: String::new(),
             name,
-            description: String::new(),
-            key: String::new(),
+            description,
+            key,
             enabled: true,
             project_id: String::new(),
             created_at: None,
@@ -138,7 +142,13 @@ mod tests {
         );
 
         let mut policies = HashMap::new();
-        policies.insert("policy-1".to_string(), "read:users".to_string());
+        policies.insert(
+            "policy-1".to_string(),
+            UserPolicy {
+                name: "read:users".to_string(),
+                mapping: None,
+            },
+        );
 
         let user = User {
             id: "user-123".to_string(),
@@ -148,6 +158,7 @@ mod tests {
             phone: "+1234567890".to_string(),
             enabled: true,
             profile_pic: "avatar.jpg".to_string(),
+            linked_client_id: None,
             expiry: Some("2025-12-31T23:59:59Z".to_string()),
             roles,
             resources,
@@ -173,7 +184,7 @@ mod tests {
     #[test]
     fn test_user_policy_mapping_value_static_field() {
         let mapping_value = UserPolicyMappingValue {
-            static_value: "test-value".to_string(),
+            static_val: Some("test-value".to_string()),
         };
 
         // Test serialization with renamed field
@@ -185,12 +196,12 @@ mod tests {
         let json_input = r#"{"static":"deserialized-value"}"#;
         let deserialized: UserPolicyMappingValue =
             serde_json::from_str(json_input).expect("Failed to deserialize mapping value");
-        assert_eq!(deserialized.static_value, "deserialized-value");
+        assert_eq!(deserialized.static_val.unwrap(), "deserialized-value");
     }
 
     #[test]
     fn test_resource_new_constructor() {
-        let resource = Resource::new("res-1".to_string(), "Test Resource".to_string());
+        let resource = Resource::new("res-1".to_string(), "Test Resource".to_string(), "test-key".to_string());
 
         assert_eq!(resource.id, "res-1");
         assert_eq!(resource.name, "Test Resource");

@@ -10,6 +10,7 @@ class User:
         self.phone: str = data.get("phone", "")
         self.enabled: bool = data.get("enabled", False)
         self.profile_pic: str = data.get("profile_pic", "")
+        self.linked_client_id: Optional[str] = data.get("linked_client_id")
         self.expiry: Optional[str] = data.get("expiry")
         self.roles: Dict[str, "UserRole"] = {
             k: UserRole(v) for k, v in data.get("roles", {}).items()
@@ -17,7 +18,9 @@ class User:
         self.resources: Dict[str, "UserResource"] = {
             k: UserResource(v) for k, v in data.get("resources", {}).items()
         }
-        self.policies: Dict[str, str] = data.get("policies", {})
+        self.policies: Dict[str, "UserPolicy"] = {
+            k: UserPolicy(v) for k, v in data.get("policies", {}).items()
+        }
         self.created_at: Optional[str] = data.get("created_at")
         self.created_by: str = data.get("created_by", "")
         self.updated_at: Optional[str] = data.get("updated_at")
@@ -27,19 +30,23 @@ class User:
 class UserPolicy:
     def __init__(self, data: Dict[str, Any]):
         self.name: str = data.get("name", "")
-        self.mapping: UserPolicyMapping = UserPolicyMapping(data.get("mapping", {}))
+        self.mapping: Optional[UserPolicyMapping] = None
+        if data.get("mapping"):
+            self.mapping = UserPolicyMapping(data["mapping"])
 
 
 class UserPolicyMapping:
     def __init__(self, data: Dict[str, Any]):
-        self.arguments: Dict[str, UserPolicyMappingValue] = {
-            k: UserPolicyMappingValue(v) for k, v in data.get("arguments", {}).items()
-        }
+        self.arguments: Optional[Dict[str, UserPolicyMappingValue]] = None
+        if data.get("arguments"):
+            self.arguments = {
+                k: UserPolicyMappingValue(v) for k, v in data["arguments"].items()
+            }
 
 
 class UserPolicyMappingValue:
     def __init__(self, data: Dict[str, Any]):
-        self.static: str = data.get("static", "")
+        self.static: Optional[str] = data.get("static")
 
 
 class UserRole:

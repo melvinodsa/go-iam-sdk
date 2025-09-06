@@ -257,7 +257,7 @@ mod tests {
             "test-secret".to_string(),
         );
 
-        let resource = Resource::new("resource-id".to_string(), "Test Resource".to_string());
+        let resource = Resource::new("resource-1".to_string(), "Test Resource".to_string(), "test-key".to_string());
         let result = service.create_resource(&resource, "valid-token").await;
         mock.assert_async().await;
 
@@ -281,7 +281,7 @@ mod tests {
             "test-secret".to_string(),
         );
 
-        let resource = Resource::new("resource-id".to_string(), "Test Resource".to_string());
+        let resource = Resource::new("resource-1".to_string(), "Test Resource".to_string(), "test-key".to_string());
         let result = service.create_resource(&resource, "invalid-token").await;
         mock.assert_async().await;
 

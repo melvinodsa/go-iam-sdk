@@ -2,12 +2,13 @@ import axios, { AxiosInstance } from 'axios';
 
 export interface User {
   id: string;
-  projectId: string;
+  project_id: string;
   name: string;
   email: string;
   phone: string;
   enabled: boolean;
   profile_pic: string;
+  linked_client_id?: string;
   expiry?: string;
   roles: Record<string, UserRole>;
   resources: Record<string, UserResource>;
@@ -20,15 +21,15 @@ export interface User {
 
 export interface UserPolicy {
   name: string;
-  mapping: UserPolicyMapping;
+  mapping?: UserPolicyMapping;
 }
 
 export interface UserPolicyMapping {
-  arguments: Record<string, UserPolicyMappingValue>;
+  arguments?: Record<string, UserPolicyMappingValue>;
 }
 
 export interface UserPolicyMappingValue {
-  static: string;
+  static?: string;
 }
 
 export interface UserRole {
