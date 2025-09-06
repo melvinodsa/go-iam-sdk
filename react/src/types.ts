@@ -20,6 +20,8 @@ export interface User {
   profile_pic?: string;
   /** User's account expiry date */
   expiry?: string;
+  /** ID of the linked client, if any */
+  linked_client_id?: string;
   /** User's roles */
   roles: Record<string, UserRole>;
   /** User's resources */
@@ -35,6 +37,7 @@ export interface User {
   /** User's last updater */
   updated_by: string;
 }
+
 
 export interface UserPolicy {
   /** Name of the policy */
