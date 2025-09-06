@@ -89,9 +89,12 @@ describe('useGoIam Hookstate Implementation', () => {
 
             const mockUser = {
                 id: '123',
+                project_id: 'proj-456',
                 name: 'John Doe',
                 email: 'john@example.com',
+                phone: '+1234567890',
                 profile_pic: '',
+                linked_client_id: 'test-client',
                 created_at: '2023-01-01T00:00:00Z',
                 updated_at: '2023-01-01T00:00:00Z',
                 created_by: 'system',
@@ -100,6 +103,7 @@ describe('useGoIam Hookstate Implementation', () => {
                 expiry: '2024-01-01T00:00:00Z',
                 resources: {},
                 roles: {},
+                policies: {},
             };
 
             // Test setting clientId
@@ -176,17 +180,21 @@ describe('useGoIam Hookstate Implementation', () => {
                     },
                     user: {
                         id: '123',
+                        project_id: 'proj-456',
                         name: 'John Doe',
                         email: 'john@example.com',
+                        phone: '+1234567890',
                         profile_pic: '',
+                        linked_client_id: 'test-client',
                         created_at: '2023-01-01T00:00:00Z',
                         updated_at: '2023-01-01T00:00:00Z',
                         created_by: 'system',
                         updated_by: 'system',
                         enabled: true,
                         expiry: '2024-01-01T00:00:00Z',
-                        resources: { admin: { id: '1', key: 'admin', name: 'Admin' } },
+                        resources: { admin: { id: '1', key: 'admin', name: 'Admin', role_ids: {}, policy_ids: {} } },
                         roles: { admin: { id: '1', name: 'Admin' } },
+                        policies: {},
                     },
                 },
             };
@@ -260,9 +268,12 @@ describe('useGoIam Hookstate Implementation', () => {
                     },
                     user: {
                         id: '123',
+                        project_id: 'proj-456',
                         name: 'John Doe',
                         email: 'john@example.com',
+                        phone: '+1234567890',
                         profile_pic: '',
+                        linked_client_id: 'test-client',
                         created_at: '2023-01-01T00:00:00Z',
                         updated_at: '2023-01-01T00:00:00Z',
                         created_by: 'system',
@@ -271,6 +282,7 @@ describe('useGoIam Hookstate Implementation', () => {
                         expiry: '2024-01-01T00:00:00Z',
                         resources: {},
                         roles: {},
+                        policies: {},
                     },
                 },
             };
@@ -324,9 +336,12 @@ describe('useGoIam Hookstate Implementation', () => {
                     },
                     user: {
                         id: '123',
+                        project_id: 'proj-456',
                         name: 'John Doe',
                         email: 'john@example.com',
+                        phone: '+1234567890',
                         profile_pic: '',
+                        linked_client_id: 'test-client',
                         created_at: '2023-01-01T00:00:00Z',
                         updated_at: '2023-01-01T00:00:00Z',
                         created_by: 'system',
@@ -334,10 +349,11 @@ describe('useGoIam Hookstate Implementation', () => {
                         enabled: true,
                         expiry: '2024-01-01T00:00:00Z',
                         resources: {
-                            admin: { id: '1', key: 'admin', name: 'Admin' },
-                            user: { id: '2', key: 'user', name: 'User' },
+                            admin: { id: '1', key: 'admin', name: 'Admin', role_ids: {}, policy_ids: {} },
+                            user: { id: '2', key: 'user', name: 'User', role_ids: {}, policy_ids: {} },
                         },
                         roles: {},
+                        policies: {},
                     },
                 },
             };
@@ -370,9 +386,12 @@ describe('useGoIam Hookstate Implementation', () => {
                 message: 'Success',
                 data: {
                     id: '123',
+                    project_id: 'proj-456',
                     name: 'John Doe',
                     email: 'john@example.com',
+                    phone: '+1234567890',
                     profile_pic: '',
+                    linked_client_id: 'test-client',
                     created_at: '2023-01-01T00:00:00Z',
                     updated_at: '2023-01-01T00:00:00Z',
                     created_by: 'system',
@@ -380,9 +399,10 @@ describe('useGoIam Hookstate Implementation', () => {
                     enabled: true,
                     expiry: '2024-01-01T00:00:00Z',
                     resources: {
-                        user: { id: '2', key: 'user', name: 'User' },
+                        user: { id: '2', key: 'user', name: 'User', role_ids: {}, policy_ids: {} },
                     },
                     roles: {},
+                    policies: {},
                 },
             };
 

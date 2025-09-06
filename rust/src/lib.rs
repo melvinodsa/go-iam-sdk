@@ -24,7 +24,7 @@
 //!     println!("User: {} ({})", user.name, user.email);
 //!     
 //!     // Create a resource
-//!     let resource = Resource::new("resource-id".to_string(), "Resource Name".to_string());
+//!     let resource = Resource::new("Resource Name".to_string(), "A sample resource".to_string(), "resource-key".to_string());
 //!     service.create_resource(&resource, &token).await?;
 //!     
 //!     Ok(())

@@ -43,17 +43,17 @@ export interface UserPolicy {
   /** Name of the policy */
   name: string;
   /** Policy mapping */
-  mapping: UserPolicyMapping;
+  mapping?: UserPolicyMapping;
 }
 
 export interface UserPolicyMapping {
   /** Mapping of policy arguments */
-  arguments: Record<string, UserPolicyMappingValue>;
+  arguments?: Record<string, UserPolicyMappingValue>;
 }
 
 export interface UserPolicyMappingValue {
   /** Static value for the policy argument */
-  static: string;
+  static?: string;
 }
 
 export interface UserRole {

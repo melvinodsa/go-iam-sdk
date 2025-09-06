@@ -201,12 +201,12 @@ mod tests {
 
     #[test]
     fn test_resource_new_constructor() {
-        let resource = Resource::new("res-1".to_string(), "Test Resource".to_string(), "test-key".to_string());
+        let resource = Resource::new("Test Resource".to_string(), "A test resource".to_string(), "test-key".to_string());
 
-        assert_eq!(resource.id, "res-1");
+        assert_eq!(resource.id, "");
         assert_eq!(resource.name, "Test Resource");
-        assert_eq!(resource.description, "");
-        assert_eq!(resource.key, "");
+        assert_eq!(resource.description, "A test resource");
+        assert_eq!(resource.key, "test-key");
         assert!(resource.enabled);
         assert_eq!(resource.project_id, "");
         assert_eq!(resource.created_by, "");
