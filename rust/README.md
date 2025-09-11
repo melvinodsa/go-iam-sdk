@@ -43,6 +43,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let resource = Resource::new("resource-1".to_string(), "My Resource".to_string());
             service.create_resource(&resource, &token).await?;
             println!("Resource created successfully");
+
+            service.delete_resource("resource-123", &token).await?;
+            println!("Resource created successfully");
         },
         Err(e) => eprintln!("Verification failed: {}", e),
     }
