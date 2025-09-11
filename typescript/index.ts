@@ -119,4 +119,19 @@ export class GoIamSdk {
       );
     }
   }
+
+  async deleteResource(resourceId: string, token: string): Promise<void> {
+    try {
+      await this.client.delete(`/resource/v1/${resourceId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (error) {
+      const err = error as any;
+      throw new Error(
+        `Failed to delete resource: ${err.response?.data?.message || err.message}`
+      );
+    }
+  }
 }

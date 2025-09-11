@@ -122,18 +122,51 @@ package main
 import (
     "context"
     "fmt"
+    "log"
     "github.com/melvinodsa/go-iam-sdk/golang"
 )
 
 func main() {
-    service := golang.NewService("https://your-iam-api.com", "username", "password")
+    // Initialize the service
+    service := golang.NewService("https://your-iam-api.com", "client-id", "secret")
+    ctx := context.Background()
 
     // Verify authentication code
-    result, err := service.Verify(context.Background(), "auth-code")
+    token, err := service.Verify(ctx, "auth-code")
     if err != nil {
-        panic(err)
+        log.Fatalf("Failed to verify code: %v", err)
     }
+    fmt.Printf("Access Token: %s\n", token)
 
-    fmt.Printf("Verification result: %+v\n", result)
+    // Get current user information
+    user, err := service.Me(ctx, token)
+    if err != nil {
+        log.Fatalf("Failed to fetch user: %v", err)
+    }
+    fmt.Printf("User: %s (%s)\n", user.Name, user.Email)
+
+    // Create a resource
+    resource := &golang.Resource{
+        Name:        "Test Resource",
+        Description: "A test resource",
+        Key:         "test-key",
+        Enabled:     true,
+        ProjectId:   "project-123",
+        CreatedBy:   "admin",
+        UpdatedBy:   "admin",
+    }
+    
+    err = service.CreateResource(ctx, resource, token)
+    if err != nil {
+        log.Fatalf("Failed to create resource: %v", err)
+    }
+    fmt.Println("Resource created successfully")
+
+    // Delete a resource
+    err = service.DeleteResource(ctx, "resource-id", token)
+    if err != nil {
+        log.Fatalf("Failed to delete resource: %v", err)
+    }
+    fmt.Println("Resource deleted successfully")
 }
 ```

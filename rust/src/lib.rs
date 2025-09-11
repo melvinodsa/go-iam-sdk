@@ -27,6 +27,9 @@
 //!     let resource = Resource::new("Resource Name".to_string(), "A sample resource".to_string(), "resource-key".to_string());
 //!     service.create_resource(&resource, &token).await?;
 //!     
+//!     // Delete a resource
+//!     service.delete_resource("resource-id", &token).await?;
+//!     
 //!     Ok(())
 //! }
 //! ```

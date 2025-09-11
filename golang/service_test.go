@@ -115,3 +115,51 @@ func TestCreateResource(t *testing.T) {
 		}
 	})
 }
+
+func TestDeleteResource(t *testing.T) {
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") == "Bearer valid-token" {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`{"success":true,"message":"Resource deleted successfully"}`))
+		} else {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte(`{"success":false,"message":"Invalid token"}`))
+		}
+	}
+
+	ts := httptest.NewServer(http.HandlerFunc(handler))
+	defer ts.Close()
+
+	service := NewService(ts.URL, "client-id", "secret")
+
+	t.Run("Valid Token", func(t *testing.T) {
+		err := service.DeleteResource(context.Background(), "resource-123", "valid-token")
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
+	})
+
+	t.Run("Invalid Token", func(t *testing.T) {
+		err := service.DeleteResource(context.Background(), "resource-123", "invalid-token")
+		if err == nil {
+			t.Fatal("expected an error, got none")
+		}
+	})
+
+	t.Run("Non-existent Resource", func(t *testing.T) {
+		// Override handler for this test to return 404
+		notFoundHandler := func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte(`{"success":false,"message":"Resource not found"}`))
+		}
+		
+		notFoundServer := httptest.NewServer(http.HandlerFunc(notFoundHandler))
+		defer notFoundServer.Close()
+		
+		notFoundService := NewService(notFoundServer.URL, "client-id", "secret")
+		err := notFoundService.DeleteResource(context.Background(), "non-existent", "valid-token")
+		if err == nil {
+			t.Fatal("expected an error, got none")
+		}
+	})
+}

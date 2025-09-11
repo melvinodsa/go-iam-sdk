@@ -107,6 +107,47 @@ class TestServiceImpl(unittest.TestCase):
 
         self.assertIn("Failed to create resource", str(context.exception))
 
+    @patch("goiam.service_impl.requests.Session.delete")
+    def test_delete_resource_success(self, mock_delete):
+        # Mock successful response
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "success": True,
+            "message": "Resource deleted successfully",
+        }
+        mock_delete.return_value = mock_response
+
+        # Should not raise an exception
+        self.service.delete_resource("resource-123", "valid-token")
+        mock_delete.assert_called_once()
+
+    @patch("goiam.service_impl.requests.Session.delete")
+    def test_delete_resource_failure(self, mock_delete):
+        # Mock failure response
+        mock_response = Mock()
+        mock_response.status_code = 404
+        mock_response.reason = "Not Found"
+        mock_delete.return_value = mock_response
+
+        with self.assertRaises(Exception) as context:
+            self.service.delete_resource("non-existent", "valid-token")
+
+        self.assertIn("Failed to delete resource", str(context.exception))
+
+    @patch("goiam.service_impl.requests.Session.delete")
+    def test_delete_resource_unauthorized(self, mock_delete):
+        # Mock unauthorized response
+        mock_response = Mock()
+        mock_response.status_code = 401
+        mock_response.reason = "Unauthorized"
+        mock_delete.return_value = mock_response
+
+        with self.assertRaises(Exception) as context:
+            self.service.delete_resource("resource-id", "invalid-token")
+
+        self.assertIn("Failed to delete resource", str(context.exception))
+
 
 if __name__ == "__main__":
     unittest.main()

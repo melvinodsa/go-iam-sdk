@@ -51,3 +51,17 @@ class Service(ABC):
             Exception: If creation fails
         """
         pass
+
+    @abstractmethod
+    def delete_resource(self, resource_id: str, token: str) -> None:
+        """
+        Delete a resource by ID
+
+        Args:
+            resource_id: ID of the resource to delete
+            token: Bearer token for authentication
+
+        Raises:
+            Exception: If deletion fails
+        """
+        pass

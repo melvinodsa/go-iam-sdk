@@ -72,6 +72,16 @@ except Exception as error:
     print(f"Failed to create resource: {error}")
 ```
 
+### Delete a Resource
+
+```python
+try:
+    service.delete_resource("resource-id", token)
+    print("Resource deleted successfully")
+except Exception as error:
+    print(f"Failed to delete resource: {error}")
+```
+
 ## Classes
 
 The SDK provides the following main classes:

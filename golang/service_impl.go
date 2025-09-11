@@ -134,3 +134,39 @@ func (s *serviceImpl) CreateResource(ctx context.Context, resource *Resource, to
 
 	return nil
 }
+
+// DeleteResource deletes a resource with the provided ID and token.
+// It returns an error if the deletion fails.
+func (s *serviceImpl) DeleteResource(ctx context.Context, resourceID string, token string) error {
+	url := fmt.Sprintf("%s/resource/v1/%s", s.baseURL, resourceID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %w", err)
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error making request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	var statusError error
+	if resp.StatusCode != http.StatusOK {
+		statusError = fmt.Errorf("failed to delete resource: %s", resp.Status)
+	}
+
+	result := ResourceResponse{}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		if statusError != nil {
+			return fmt.Errorf("%w: %s", statusError, err)
+		}
+		return fmt.Errorf("error decoding response: %w", err)
+	}
+
+	if !result.Success {
+		return fmt.Errorf("failed to delete resource: %s. Status: %s", result.Message, resp.Status)
+	}
+
+	return nil
+}

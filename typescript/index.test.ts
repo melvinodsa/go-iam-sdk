@@ -103,4 +103,37 @@ describe('GoIamSdk', () => {
       ).rejects.toThrow('Failed to create resource: Invalid token');
     });
   });
+
+  describe('deleteResource', () => {
+    it('should delete a resource for valid token', async () => {
+      mock.onDelete('/resource/v1/resource-123').reply(200, {
+        success: true,
+        message: 'Resource deleted successfully',
+      });
+
+      await expect(
+        sdk.deleteResource('resource-123', 'valid-token')
+      ).resolves.toBeUndefined();
+    });
+
+    it('should throw an error for invalid token', async () => {
+      mock.onDelete('/resource/v1/resource-456').reply(401, {
+        message: 'Invalid token',
+      });
+
+      await expect(
+        sdk.deleteResource('resource-456', 'invalid-token')
+      ).rejects.toThrow('Failed to delete resource: Invalid token');
+    });
+
+    it('should throw an error for non-existent resource', async () => {
+      mock.onDelete('/resource/v1/non-existent').reply(404, {
+        message: 'Resource not found',
+      });
+
+      await expect(
+        sdk.deleteResource('non-existent', 'valid-token')
+      ).rejects.toThrow('Failed to delete resource: Resource not found');
+    });
+  });
 });

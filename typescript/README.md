@@ -56,9 +56,9 @@ const resource = {
   description: 'Resource Description',
   key: 'resource-key',
   enabled: true,
-  projectId: 'project-id',
-  createdBy: 'creator',
-  updatedBy: 'updater',
+  project_id: 'project-id',
+  created_by: 'creator',
+  updated_by: 'updater',
 };
 
 try {
@@ -66,6 +66,17 @@ try {
   console.log('Resource created successfully');
 } catch (error) {
   console.error('Failed to create resource:', error);
+}
+```
+
+### Delete a Resource
+
+```typescript
+try {
+  await sdk.deleteResource('resource-id', token);
+  console.log('Resource deleted successfully');
+} catch (error) {
+  console.error('Failed to delete resource:', error);
 }
 ```
 
@@ -78,20 +89,21 @@ The SDK exports the following TypeScript interfaces:
 ```typescript
 interface User {
   id: string;
-  projectId: string;
+  project_id: string;
   name: string;
   email: string;
   phone: string;
   enabled: boolean;
-  profilePic: string;
+  profile_pic: string;
+  linked_client_id?: string;
   expiry?: string;
   roles: Record<string, UserRole>;
   resources: Record<string, UserResource>;
-  policies: Record<string, string>;
-  createdAt?: string;
-  createdBy: string;
-  updatedAt?: string;
-  updatedBy: string;
+  policies: Record<string, UserPolicy>;
+  created_at?: string;
+  created_by: string;
+  updated_at?: string;
+  updated_by: string;
 }
 ```
 
@@ -104,12 +116,12 @@ interface Resource {
   description: string;
   key: string;
   enabled: boolean;
-  projectId: string;
-  createdAt?: string;
-  createdBy: string;
-  updatedAt?: string;
-  updatedBy: string;
-  deletedAt?: string;
+  project_id: string;
+  created_at?: string;
+  created_by: string;
+  updated_at?: string;
+  updated_by: string;
+  deleted_at?: string;
 }
 ```
 

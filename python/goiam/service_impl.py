@@ -140,6 +140,40 @@ class ServiceImpl(Service):
         except Exception as e:
             raise Exception(f"Failed to create resource: {str(e)}")
 
+    def delete_resource(self, resource_id: str, token: str) -> None:
+        """
+        Delete a resource by ID
+
+        Args:
+            resource_id: ID of the resource to delete
+            token: Bearer token for authentication
+
+        Raises:
+            Exception: If deletion fails
+        """
+        url = f"{self.base_url}/resource/v1/{resource_id}"
+        headers = {"Authorization": f"Bearer {token}"}
+
+        try:
+            response = self.session.delete(url, headers=headers)
+
+            if response.status_code != 200:
+                raise Exception(
+                    f"Failed to delete resource: {response.status_code} {response.reason}"
+                )
+
+            resource_response = ResourceResponse(response.json())
+
+            if not resource_response.success:
+                raise Exception(
+                    f"Failed to delete resource: {resource_response.message}"
+                )
+
+        except requests.RequestException as e:
+            raise Exception(f"Request failed: {str(e)}")
+        except Exception as e:
+            raise Exception(f"Failed to delete resource: {str(e)}")
+
 
 def new_service(base_url: str, client_id: str, secret: str) -> Service:
     """

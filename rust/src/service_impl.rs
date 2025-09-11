@@ -131,6 +131,36 @@ impl Service for ServiceImpl {
 
         Ok(())
     }
+
+    async fn delete_resource(&self, resource_id: &str, token: &str) -> Result<()> {
+        let url = format!("{}/resource/v1/{}", self.base_url, resource_id);
+
+        let response = self
+            .client
+            .delete(&url)
+            .header("Authorization", format!("Bearer {}", token))
+            .send()
+            .await?;
+
+        if !response.status().is_success() {
+            return Err(GoIamError::ApiError {
+                message: format!("Failed to delete resource: {}", response.status()),
+                status: response.status().as_u16(),
+            });
+        }
+
+        let resource_response: ResourceResponse = response.json().await?;
+
+        if !resource_response.success {
+            return Err(GoIamError::AuthError {
+                message: resource_response
+                    .message
+                    .unwrap_or_else(|| "Resource deletion failed".to_string()),
+            });
+        }
+
+        Ok(())
+    }
 }
 
 /// Create a new instance of the Go IAM service
@@ -392,5 +422,51 @@ mod tests {
             }
             _ => panic!("Expected InvalidResponse error"),
         }
+    }
+
+    #[tokio::test]
+    async fn test_delete_resource_success() {
+        let mut server = Server::new_async().await;
+        let mock = server
+            .mock("DELETE", "/resource/v1/resource-123")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(r#"{"success":true,"message":"Resource deleted successfully"}"#)
+            .create_async()
+            .await;
+
+        let service = ServiceImpl::new(
+            server.url(),
+            "test-client-id".to_string(),
+            "test-secret".to_string(),
+        );
+
+        let result = service.delete_resource("resource-123", "valid-token").await;
+        mock.assert_async().await;
+
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_delete_resource_failure() {
+        let mut server = Server::new_async().await;
+        let mock = server
+            .mock("DELETE", "/resource/v1/resource-456")
+            .with_status(404)
+            .with_header("content-type", "application/json")
+            .with_body(r#"{"success":false,"message":"Resource not found"}"#)
+            .create_async()
+            .await;
+
+        let service = ServiceImpl::new(
+            server.url(),
+            "test-client-id".to_string(),
+            "test-secret".to_string(),
+        );
+
+        let result = service.delete_resource("resource-456", "valid-token").await;
+        mock.assert_async().await;
+
+        assert!(result.is_err());
     }
 }
