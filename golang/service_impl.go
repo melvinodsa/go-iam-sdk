@@ -61,7 +61,7 @@ func (s *serviceImpl) Verify(ctx context.Context, code string) (string, error) {
 
 // Me retrieves the user information associated with the provided token.
 func (s *serviceImpl) Me(ctx context.Context, token string) (*User, error) {
-	url := fmt.Sprintf("%s/me/v1/me", s.baseURL)
+	url := fmt.Sprintf("%s/me/v1/", s.baseURL)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
