@@ -42,7 +42,7 @@ describe('GoIamSdk', () => {
 
   describe('me', () => {
     it('should return user information for valid token', async () => {
-      mock.onGet('/me/v1/me').reply(200, {
+      mock.onGet('/me/v1/').reply(200, {
         data: { id: 'user-id', name: 'Test User' },
       });
 
@@ -52,7 +52,7 @@ describe('GoIamSdk', () => {
     });
 
     it('should throw an error for invalid token', async () => {
-      mock.onGet('/me/v1/me').reply(401, {
+      mock.onGet('/me/v1/').reply(401, {
         message: 'Invalid token',
       });
 

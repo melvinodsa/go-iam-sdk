@@ -91,7 +91,7 @@ export class GoIamSdk {
 
   async me(token: string): Promise<User> {
     try {
-      const response = await this.client.get('/me/v1/me', {
+      const response = await this.client.get('/me/v1/', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
