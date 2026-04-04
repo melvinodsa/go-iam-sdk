@@ -145,6 +145,35 @@ func main() {
     }
     fmt.Printf("User: %s (%s)\n", user.Name, user.Email)
 
+    // List projects
+    projects, err := service.ListProjects(ctx, token)
+    if err != nil {
+        log.Fatalf("Failed to list projects: %v", err)
+    }
+    fmt.Printf("Projects available: %d\n", len(projects))
+
+    // Create a project
+    project := &golang.Project{
+        Id:          "project-123",
+        Name:        "Example Project",
+        Description: "A sample project managed by the SDK",
+        Tags:        []string{"internal", "prod"},
+    }
+    err = service.CreateProject(ctx, project, token)
+    if err != nil {
+        log.Fatalf("Failed to create project: %v", err)
+    }
+    fmt.Printf("Created project: %s\n", project.Name)
+
+    // Update the same project
+    project.Description = "Updated project description"
+    project.Tags = []string{"internal", "prod", "updated"}
+    err = service.UpdateProject(ctx, project.Id, project, token)
+    if err != nil {
+        log.Fatalf("Failed to update project: %v", err)
+    }
+    fmt.Printf("Updated project: %s\n", project.Name)
+
     // Create a resource
     resource := &golang.Resource{
         Name:        "Test Resource",
@@ -155,7 +184,7 @@ func main() {
         CreatedBy:   "admin",
         UpdatedBy:   "admin",
     }
-    
+
     err = service.CreateResource(ctx, resource, token)
     if err != nil {
         log.Fatalf("Failed to create resource: %v", err)
